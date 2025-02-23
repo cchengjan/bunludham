@@ -31,7 +31,7 @@ jobs:
         run: npm run lint
 
       - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/github-actions/deploy@latest
+        uses: FirebaseExtended/github-actions/deploy@v1.1
         with:
           repoToken: '${{ secrets.GITHUB_TOKEN }}'
           firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT }}'
