@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LIFF Example</title>
+  <script src="https://static.line-scdn.net/liff/edge/2/sdk.js"></script>
+  <script>
+    // ฟังก์ชันเริ่มต้น LIFF
+    async function initLIFF() {
+      try {
+        // เริ่มต้น LIFF โดยใช้ liffId ของคุณ
+        await liff.init({ liffId: "2006939118-QV7PnjNA" });
+
+        // ตรวจสอบสถานะการล็อกอินของผู้ใช้
+        if (!liff.isLoggedIn()) {
+          liff.login(); // หากผู้ใช้ยังไม่ได้ล็อกอิน จะให้ล็อกอิน
+        } else {
+          // หากล็อกอินแล้ว ให้ดึงข้อมูลโปรไฟล์
+          const profile = await liff.getProfile();
+          const userId = profile.userId;  // ดึง userId ของผู้ใช้
+          console.log("User ID: " + userId); // แสดง userId ใน console
+
+          // สร้าง URL ของ Google Form พร้อมพารามิเตอร์ userId
+          const formUrl = `https://docs.google.com/forms/d/e/1FAIpQLSf-MypAC-i2LM7zkNNgEuCbyP0Yo0KDitxIf9ZFWMZVt3_84Q/viewform?entry.123456789=${userId}`;
+
+          // เปลี่ยนหน้าไปที่ Google Form
+          window.location.href = formUrl;
+        }
+      } catch (error) {
+        console.error("Error initializing LIFF: ", error);
+        alert("เกิดข้อผิดพลาดในการโหลด LIFF");
+      }
+    }
+  </script>
+</head>
+<body>
+  <h1>ยินดีต้อนรับเข้าสู่ระบบลงทะเบียน</h1>
+  <p>กรุณากดปุ่มด้านล่างเพื่อเริ่มต้นการลงทะเบียน:</p>
+  <button onclick="initLIFF()">เปิด LIFF เพื่อสมัคร</button>
+</body>
+</html>
