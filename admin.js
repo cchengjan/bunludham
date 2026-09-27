@@ -133,7 +133,7 @@
     emptyFrameList.classList.toggle('hidden', frames.length > 0);
 
     frames.forEach((frame, idx) => {
-      const isUserMode = frame.showInUserMode || frame.category === 'กฐิน';
+      const isUserMode = frame.showInUserMode !== false;
       const row = document.createElement('div');
       row.className = 'frame-row';
       row.innerHTML = `
@@ -213,7 +213,7 @@
     inputFrameCategory.value = editingFrame.category;
     inputFrameKeywords.value = (editingFrame.keywords || []).join(', ');
     selectFrameStatus.value = editingFrame.status;
-    checkShowInUserMode.checked = frame ? (frame.showInUserMode !== undefined ? !!frame.showInUserMode : frame.category === 'กฐิน') : true;
+    checkShowInUserMode.checked = frame ? (frame.showInUserMode !== false) : true;
 
     framePngPreview.src = editingFrame.thumbnail || editingFrame.filename;
     visualEditorFrameImg.src = editingFrame.filename;
@@ -239,39 +239,68 @@
     const file = e.target.files[0];
     if (!file) return;
 
-    const url = URL.createObjectURL(file);
-    const tempImg = new Image();
-    tempImg.onload = () => {
-      currentFrameNatW = tempImg.naturalWidth;
-      currentFrameNatH = tempImg.naturalHeight;
-      frameDimsTxt.textContent = `ขนาด Canvas: ${currentFrameNatW} x ${currentFrameNatH} px`;
-      
-      editingFrame.filename = url;
-      editingFrame.thumbnail = url;
-      editingFrame.canvasWidth = currentFrameNatW;
-      editingFrame.canvasHeight = currentFrameNatH;
+    showToast('กำลังประมวลผลไฟล์ภาพกรอบ...');
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const dataUrl = ev.target.result;
+      const tempImg = new Image();
+      tempImg.onload = () => {
+        currentFrameNatW = tempImg.naturalWidth;
+        currentFrameNatH = tempImg.naturalHeight;
+        frameDimsTxt.textContent = `ขนาด Canvas: ${currentFrameNatW} x ${currentFrameNatH} px`;
 
-      framePngPreview.src = url;
-      visualEditorFrameImg.src = url;
+        // If very large image (> 1600px), optimize to keep under storage quota
+        let finalDataUrl = dataUrl;
+        if (currentFrameNatW > 1600 || currentFrameNatH > 1600) {
+          const maxDim = 1600;
+          const ratio = Math.min(maxDim / currentFrameNatW, maxDim / currentFrameNatH);
+          const cw = Math.round(currentFrameNatW * ratio);
+          const ch = Math.round(currentFrameNatH * ratio);
+          const optCanvas = document.createElement('canvas');
+          optCanvas.width = cw;
+          optCanvas.height = ch;
+          const optCtx = optCanvas.getContext('2d');
+          optCtx.drawImage(tempImg, 0, 0, cw, ch);
+          finalDataUrl = optCanvas.toDataURL('image/png', 0.94);
+        }
 
-      // Default photoArea
-      editingFrame.photoArea = {
-        x: Math.round(currentFrameNatW * 0.12),
-        y: Math.round(currentFrameNatH * 0.12),
-        width: Math.round(currentFrameNatW * 0.76),
-        height: Math.round(currentFrameNatH * 0.7),
-        borderRadius: Math.round(currentFrameNatW * 0.05)
+        // Generate fast-loading thumbnail
+        const thumbCanvas = document.createElement('canvas');
+        thumbCanvas.width = 360;
+        thumbCanvas.height = 360;
+        const thumbCtx = thumbCanvas.getContext('2d');
+        thumbCtx.drawImage(tempImg, 0, 0, 360, 360);
+        const thumbDataUrl = thumbCanvas.toDataURL('image/png', 0.90);
+
+        editingFrame.filename = finalDataUrl;
+        editingFrame.thumbnail = thumbDataUrl;
+        editingFrame.canvasWidth = currentFrameNatW;
+        editingFrame.canvasHeight = currentFrameNatH;
+
+        framePngPreview.src = thumbDataUrl;
+        visualEditorFrameImg.src = finalDataUrl;
+
+        // Default to full frame 100%
+        editingFrame.photoArea = {
+          x: 0,
+          y: 0,
+          width: currentFrameNatW,
+          height: currentFrameNatH,
+          borderRadius: 0
+        };
+
+        numAreaX.value = 0;
+        numAreaY.value = 0;
+        numAreaW.value = currentFrameNatW;
+        numAreaH.value = currentFrameNatH;
+        numAreaR.value = 0;
+
+        syncBoxFromNumbers();
+        showToast('โหลดภาพกรอบสำเร็จ (ตั้งค่าเต็มเฟรม 100% เริ่มต้น)');
       };
-
-      numAreaX.value = editingFrame.photoArea.x;
-      numAreaY.value = editingFrame.photoArea.y;
-      numAreaW.value = editingFrame.photoArea.width;
-      numAreaH.value = editingFrame.photoArea.height;
-      numAreaR.value = editingFrame.photoArea.borderRadius;
-
-      syncBoxFromNumbers();
+      tempImg.src = dataUrl;
     };
-    tempImg.src = url;
+    reader.readAsDataURL(file);
   });
 
   // Sync Box Visual from Numeric Inputs

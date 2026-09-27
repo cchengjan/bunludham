@@ -47,7 +47,19 @@ const FrameStore = (() => {
         const lastHash = localStorage.getItem(HASH_KEY);
 
         if (serverHash !== lastHash) {
-          cache = JSON.parse(seedText);
+          const serverFrames = JSON.parse(seedText);
+          const rawLocal = localStorage.getItem(STORAGE_KEY);
+          let localCustom = [];
+          if (rawLocal) {
+            try {
+              const localList = JSON.parse(rawLocal);
+              if (Array.isArray(localList)) {
+                const serverIds = new Set(serverFrames.map(f => f.id));
+                localCustom = localList.filter(f => !serverIds.has(f.id));
+              }
+            } catch (err) {}
+          }
+          cache = [...serverFrames, ...localCustom];
           localStorage.setItem(HASH_KEY, serverHash);
           persist();
           return cache;
@@ -85,7 +97,8 @@ const FrameStore = (() => {
           canvasHeight: 1024,
           photoArea: { x: 0, y: 0, width: 1024, height: 1024, borderRadius: 0 },
           status: "ACTIVE",
-          sortOrder: 1
+          sortOrder: 1,
+          showInUserMode: true
         },
         {
           id: "kathin-peacock-blue",
@@ -98,7 +111,8 @@ const FrameStore = (() => {
           canvasHeight: 1024,
           photoArea: { x: 0, y: 0, width: 1024, height: 1024, borderRadius: 0 },
           status: "ACTIVE",
-          sortOrder: 2
+          sortOrder: 2,
+          showInUserMode: true
         },
         {
           id: "kathin-118",
@@ -111,7 +125,8 @@ const FrameStore = (() => {
           canvasHeight: 2351,
           photoArea: { x: 0, y: 0, width: 2351, height: 2351, borderRadius: 0 },
           status: "ACTIVE",
-          sortOrder: 3
+          sortOrder: 3,
+          showInUserMode: true
         }
       ];
     }

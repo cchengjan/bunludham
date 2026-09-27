@@ -116,21 +116,15 @@
         console.warn('FrameStore getActive error', e);
       }
     }
-    // Priority 1: marked explicitly as showInUserMode
-    let userFrames = list.filter(f => f.showInUserMode === true);
-    // Priority 2: category 'กฐิน' or keyword 'กฐิน'
-    if (userFrames.length === 0) {
-      userFrames = list.filter(f => f.category === 'กฐิน' || (f.keywords && f.keywords.includes('กฐิน')));
+    if (Array.isArray(list) && list.length > 0) {
+      // Any frame from Admin whose showInUserMode is not explicitly false is included!
+      const userFrames = list.filter(f => f.showInUserMode !== false);
+      if (userFrames.length > 0) {
+        return userFrames;
+      }
+      return list;
     }
-    // Priority 3: first 3 active frames
-    if (userFrames.length === 0 && list.length > 0) {
-      userFrames = list.slice(0, 3);
-    }
-    // Priority 4: fallback static KATHIN_FRAMES
-    if (!userFrames || userFrames.length === 0) {
-      userFrames = KATHIN_FRAMES;
-    }
-    return userFrames;
+    return KATHIN_FRAMES;
   }
 
   async function init() {
