@@ -107,27 +107,68 @@
   // -----------------------------------------------------------------
   // 1. Init: Render the 3 Kathin Frames
   // -----------------------------------------------------------------
-  function init() {
-    renderFrames();
-    bindEvents();
-    setupTouchGestures();
+  async function loadUserFrames() {
+    let list = [];
+    if (window.FrameStore) {
+      try {
+        list = await FrameStore.getActive();
+      } catch (e) {
+        console.warn('FrameStore getActive error', e);
+      }
+    }
+    // Priority 1: marked explicitly as showInUserMode
+    let userFrames = list.filter(f => f.showInUserMode === true);
+    // Priority 2: category 'กฐิน' or keyword 'กฐิน'
+    if (userFrames.length === 0) {
+      userFrames = list.filter(f => f.category === 'กฐิน' || (f.keywords && f.keywords.includes('กฐิน')));
+    }
+    // Priority 3: first 3 active frames
+    if (userFrames.length === 0 && list.length > 0) {
+      userFrames = list.slice(0, 3);
+    }
+    // Priority 4: fallback static KATHIN_FRAMES
+    if (!userFrames || userFrames.length === 0) {
+      userFrames = KATHIN_FRAMES;
+    }
+    return userFrames;
   }
 
-  function renderFrames() {
+  async function init() {
+    const frames = await loadUserFrames();
+    renderFrames(frames);
+    bindEvents();
+    setupTouchGestures();
+
+    // Listen for realtime updates from Admin panel!
+    window.addEventListener('pfs:frames_updated', async () => {
+      const updated = await loadUserFrames();
+      renderFrames(updated);
+      if (currentFrame) {
+        const found = updated.find(f => f.id === currentFrame.id);
+        if (found) {
+          currentFrame = found;
+          activeFrameName.textContent = found.name;
+        }
+      }
+    });
+  }
+
+  function renderFrames(framesList = KATHIN_FRAMES) {
     threeFramesContainer.innerHTML = '';
-    KATHIN_FRAMES.forEach((frame, idx) => {
+    framesList.forEach((frame, idx) => {
       const card = document.createElement('div');
       card.className = 'kathin-frame-card';
       card.setAttribute('role', 'button');
       card.setAttribute('tabindex', '0');
       card.setAttribute('aria-label', frame.name);
 
+      const sub = frame.subtitle || (frame.category === 'กฐิน' ? 'ภาพที่ระลึกกฐินคุณยายฯ' : frame.category);
       card.innerHTML = `
         <div class="kathin-frame-preview-box">
-          <img src="${frame.thumbnail}" alt="${frame.name}" loading="lazy">
+          <img src="${frame.thumbnail || frame.filename}" alt="${frame.name}" loading="lazy">
         </div>
         <div class="kathin-frame-title">${frame.name}</div>
-        <div style="font-size:0.8rem; color:#718096; margin-bottom:12px;">${frame.subtitle}</div>
+        <div style="font-size:0.8rem; color:#718096; margin-bottom:12px;">${sub}</div>
         <button type="button" class="kathin-frame-btn">
           ✨ เลือกกรอบนี้
         </button>
@@ -383,6 +424,17 @@
         canvas.style.cursor = 'grab';
       }
     });
+
+    // Mouse wheel zoom on desktop
+    canvas.addEventListener('wheel', (e) => {
+      if (!photoImg) return;
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.08 : 0.92;
+      scale = Math.max(coverScale, Math.min(maxScale, scale * zoomFactor));
+      clampOffsets();
+      syncZoomUi();
+      draw();
+    }, { passive: false });
 
     // Touch events
     canvas.addEventListener('touchstart', (e) => {

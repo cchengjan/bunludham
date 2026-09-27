@@ -29,6 +29,7 @@
   const inputFrameCategory = document.getElementById('inputFrameCategory');
   const inputFrameKeywords = document.getElementById('inputFrameKeywords');
   const selectFrameStatus = document.getElementById('selectFrameStatus');
+  const checkShowInUserMode = document.getElementById('checkShowInUserMode');
 
   // Visual Photo Area Editor Elements
   const visualAreaEditor = document.getElementById('visualAreaEditor');
@@ -42,6 +43,7 @@
   const numAreaH = document.getElementById('numAreaH');
   const numAreaR = document.getElementById('numAreaR');
 
+  const btnSetFullFrame = document.getElementById('btnSetFullFrame');
   const btnPreviewRealPhoto = document.getElementById('btnPreviewRealPhoto');
   const btnResetArea = document.getElementById('btnResetArea');
   const btnSaveFrame = document.getElementById('btnSaveFrame');
@@ -131,6 +133,7 @@
     emptyFrameList.classList.toggle('hidden', frames.length > 0);
 
     frames.forEach((frame, idx) => {
+      const isUserMode = frame.showInUserMode || frame.category === 'กฐิน';
       const row = document.createElement('div');
       row.className = 'frame-row';
       row.innerHTML = `
@@ -139,6 +142,7 @@
           <div class="frame-row-name">${frame.name}</div>
           <div class="frame-row-sub">
             <span class="badge ${frame.status}">${frame.status}</span>
+            ${isUserMode ? '<span class="badge" style="background:#FEF3C7; color:#B45309; border:1px solid #FCD34D; font-weight:700;">🪷 User Mode</span>' : ''}
             <span>หมวด: <strong>${frame.category}</strong></span>
             <span>ขนาด: ${frame.canvasWidth}x${frame.canvasHeight}</span>
             <span>พื้นที่ใส่ภาพ: X:${frame.photoArea.x} Y:${frame.photoArea.y} W:${frame.photoArea.width} H:${frame.photoArea.height}</span>
@@ -198,9 +202,10 @@
       thumbnail: 'assets/frames/kathin-118-thumb.png',
       canvasWidth: 1600,
       canvasHeight: 1600,
-      photoArea: { x: 200, y: 200, width: 1200, height: 1000, borderRadius: 120 },
+      photoArea: { x: 0, y: 0, width: 1600, height: 1600, borderRadius: 0 },
       status: 'ACTIVE',
-      sortOrder: 1
+      sortOrder: 1,
+      showInUserMode: true
     };
 
     frameEditorTitle.textContent = frame ? `แก้ไขกรอบ: ${frame.name}` : 'เพิ่มกรอบใหม่';
@@ -208,6 +213,7 @@
     inputFrameCategory.value = editingFrame.category;
     inputFrameKeywords.value = (editingFrame.keywords || []).join(', ');
     selectFrameStatus.value = editingFrame.status;
+    checkShowInUserMode.checked = frame ? (frame.showInUserMode !== undefined ? !!frame.showInUserMode : frame.category === 'กฐิน') : true;
 
     framePngPreview.src = editingFrame.thumbnail || editingFrame.filename;
     visualEditorFrameImg.src = editingFrame.filename;
@@ -363,6 +369,19 @@
   visualHandle.addEventListener('pointerup', endResize);
   visualHandle.addEventListener('pointercancel', endResize);
 
+  // Set Full Frame 100%
+  if (btnSetFullFrame) {
+    btnSetFullFrame.addEventListener('click', () => {
+      numAreaX.value = 0;
+      numAreaY.value = 0;
+      numAreaW.value = currentFrameNatW;
+      numAreaH.value = currentFrameNatH;
+      numAreaR.value = 0;
+      syncBoxFromNumbers();
+      showToast('ตั้งค่าพื้นที่ใส่ภาพเป็นเต็มเฟรม 100% แล้ว');
+    });
+  }
+
   // Reset Area to Center
   btnResetArea.addEventListener('click', () => {
     const w = Math.round(currentFrameNatW * 0.75);
@@ -402,6 +421,7 @@
     editingFrame.category = inputFrameCategory.value.trim() || 'อื่น ๆ';
     editingFrame.keywords = inputFrameKeywords.value.split(',').map(s => s.trim()).filter(Boolean);
     editingFrame.status = selectFrameStatus.value;
+    editingFrame.showInUserMode = checkShowInUserMode ? checkShowInUserMode.checked : true;
     editingFrame.canvasWidth = currentFrameNatW;
     editingFrame.canvasHeight = currentFrameNatH;
     editingFrame.photoArea = {

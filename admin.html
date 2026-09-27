@@ -23,9 +23,12 @@
         <p>ศูนย์ควบคุมกรอบภาพ คลังคำคม และการดูแลเนื้อหากิจกรรม</p>
       </div>
     </div>
-    <div style="display:flex; gap:10px; align-items:center;">
-      <a href="index.html" class="nav-back-btn" style="text-decoration:none; font-size:0.9rem; color:var(--deep-teal); font-weight:600;">
-        ← กลับหน้าเว็บผู้ใช้
+    <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+      <a href="create.html" target="_blank" class="nav-back-btn" style="text-decoration:none; font-size:0.88rem; color:var(--deep-teal); font-weight:700; background:rgba(212,175,55,0.15); padding:8px 14px; border-radius:999px; border:1px solid rgba(212,175,55,0.35);">
+        📸 เปิดหน้า User (create.html) ↗
+      </a>
+      <a href="index.html" class="nav-back-btn" style="text-decoration:none; font-size:0.88rem; color:var(--deep-teal); font-weight:600; padding:8px 12px;">
+        ← กลับหน้าหลัก
       </a>
     </div>
   </header>
@@ -114,6 +117,15 @@
             <option value="HIDDEN">HIDDEN (ซ่อนชั่วคราว)</option>
           </select>
         </div>
+        <div class="field" style="grid-column: 1 / -1; background: rgba(212, 175, 55, 0.08); padding: 12px 14px; border-radius: var(--radius-sm); border: 1px solid rgba(212, 175, 55, 0.35);">
+          <label style="display:flex; align-items:center; gap:10px; cursor:pointer; font-weight:700; color:var(--deep-teal); font-size:0.95rem; margin:0;">
+            <input type="checkbox" id="checkShowInUserMode" style="width:18px; height:18px; accent-color:var(--deep-teal);">
+            🪷 แสดงในหน้าสร้างภาพสำหรับผู้ใช้ทั่วไป (User Mode — create.html)
+          </label>
+          <p style="font-size:0.8rem; color:var(--charcoal-soft); margin:4px 0 0 28px;">
+            เมื่อติ๊กเลือก กรอบนี้จะถูกนำไปแสดงในหน้าสำหรับคนทั่วไป (เลือกได้ตามใจชอบ เช่น 3 กรอบหลักของงาน)
+          </p>
+        </div>
       </div>
 
       <!-- Visual Photo Area Editor -->
@@ -122,7 +134,7 @@
           🎯 Frame Editor — กำหนดพื้นที่ใส่ภาพ (Photo Area)
         </h3>
         <p style="font-size:0.82rem; color:var(--muted); margin-bottom:12px;">
-          ลากกล่องสีแดงเพื่อย้ายตำแหน่ง / ลากจุดมุมล่างขวาเพื่อปรับขนาด หรือกรอกตัวเลขด้านล่างให้แม่นยำ
+          ลากกล่องสีแดงเพื่อย้ายตำแหน่ง / ลากจุดมุมล่างขวาเพื่อปรับขนาด หรือกดปุ่ม "วางภาพเต็มเฟรม 100%"
         </p>
 
         <div class="area-editor-container" id="visualAreaEditor">
@@ -141,6 +153,9 @@
         </div>
 
         <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+          <button type="button" id="btnSetFullFrame" style="background:var(--deep-teal); color:#FFFFFF; border:none; padding:9px 16px; border-radius:var(--radius-sm); font-weight:700; cursor:pointer;">
+            🌟 วางภาพเต็มเฟรม 100% (Full Frame)
+          </button>
           <button type="button" id="btnPreviewRealPhoto">👁 Preview ภาพจริงในกรอบ</button>
           <button type="button" id="btnResetArea">Reset พื้นที่ตรงกลาง</button>
         </div>
