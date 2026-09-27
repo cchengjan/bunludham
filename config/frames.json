@@ -3,26 +3,49 @@
     "id": "kathin-peacock-gold",
     "name": "กฐิน ๑๑๘ ปี นกยูงทองคำ",
     "category": "กฐิน",
-    "keywords": ["กฐิน", "๑๑๘ ปี", "นกยูงทองคำ", "คุณยายอาจารย์", "ริบบิ้นน้ำเงิน"],
+    "keywords": [
+      "กฐิน",
+      "๑๑๘ ปี",
+      "นกยูงทองคำ",
+      "คุณยายอาจารย์",
+      "ริบบิ้นน้ำเงิน"
+    ],
     "filename": "assets/frames/kathin-peacock-gold.png",
     "thumbnail": "assets/frames/kathin-peacock-gold-thumb.png",
     "canvasWidth": 1024,
     "canvasHeight": 1024,
-    "photoArea": { "x": 0, "y": 0, "width": 1024, "height": 1024, "borderRadius": 0 },
+    "photoArea": {
+      "x": 0,
+      "y": 0,
+      "width": 1024,
+      "height": 1024,
+      "borderRadius": 0
+    },
     "status": "ACTIVE",
-    "sortOrder": 1,
-    "showInUserMode": true
+    "sortOrder": 1
   },
   {
     "id": "kathin-peacock-blue",
     "name": "กฐิน ๑๑๘ ปี นกยูงคู่แก้ว",
     "category": "กฐิน",
-    "keywords": ["กฐิน", "๑๑๘ ปี", "นกยูงคู่", "ดอกบัว", "คุณยายอาจารย์"],
+    "keywords": [
+      "กฐิน",
+      "๑๑๘ ปี",
+      "นกยูงคู่",
+      "ดอกบัว",
+      "คุณยายอาจารย์"
+    ],
     "filename": "assets/frames/kathin-peacock-blue.png",
     "thumbnail": "assets/frames/kathin-peacock-blue-thumb.png",
     "canvasWidth": 1024,
     "canvasHeight": 1024,
-    "photoArea": { "x": 0, "y": 0, "width": 1024, "height": 1024, "borderRadius": 0 },
+    "photoArea": {
+      "x": 0,
+      "y": 0,
+      "width": 1881,
+      "height": 1881,
+      "borderRadius": 0
+    },
     "status": "ACTIVE",
     "sortOrder": 2,
     "showInUserMode": true
@@ -31,26 +54,48 @@
     "id": "kathin-118",
     "name": "กฐิน ๑๑๘ ปี คุณยายอาจารย์",
     "category": "กฐิน",
-    "keywords": ["กฐิน", "งานบุญ", "นกยูง", "จันทร์ ขนนกยูง", "คุณยายอาจารย์"],
+    "keywords": [
+      "กฐิน",
+      "งานบุญ",
+      "นกยูง",
+      "จันทร์ ขนนกยูง",
+      "คุณยายอาจารย์"
+    ],
     "filename": "assets/frames/kathin-118.png",
     "thumbnail": "assets/frames/kathin-118-thumb.png",
     "canvasWidth": 2351,
     "canvasHeight": 2351,
-    "photoArea": { "x": 0, "y": 0, "width": 2351, "height": 2351, "borderRadius": 0 },
+    "photoArea": {
+      "x": 0,
+      "y": 0,
+      "width": 2351,
+      "height": 2351,
+      "borderRadius": 0
+    },
     "status": "ACTIVE",
-    "sortOrder": 3,
-    "showInUserMode": true
+    "sortOrder": 3
   },
   {
     "id": "muthita",
     "name": "มุทิตาสักการะ มหารัตนกตัญญู",
     "category": "มุทิตาสักการะ",
-    "keywords": ["มุทิตา", "สักการะ", "กตัญญู", "พระเถระ"],
+    "keywords": [
+      "มุทิตา",
+      "สักการะ",
+      "กตัญญู",
+      "พระเถระ"
+    ],
     "filename": "assets/frames/muthita.png",
     "thumbnail": "assets/frames/muthita-thumb.png",
     "canvasWidth": 1600,
     "canvasHeight": 1600,
-    "photoArea": { "x": 0, "y": 0, "width": 1600, "height": 1600, "borderRadius": 0 },
+    "photoArea": {
+      "x": 0,
+      "y": 0,
+      "width": 1600,
+      "height": 1600,
+      "borderRadius": 0
+    },
     "status": "ACTIVE",
     "sortOrder": 4
   },
@@ -58,12 +103,23 @@
     "id": "boon-anamai",
     "name": "มหาทานบารมี ตักบาตรพระ",
     "category": "งานบุญ",
-    "keywords": ["งานบุญ", "ตักบาตร", "ทานบารมี", "บุญกุศล"],
+    "keywords": [
+      "งานบุญ",
+      "ตักบาตร",
+      "ทานบารมี",
+      "บุญกุศล"
+    ],
     "filename": "assets/frames/boon-anamai.png",
     "thumbnail": "assets/frames/boon-anamai-thumb.png",
     "canvasWidth": 1600,
     "canvasHeight": 1600,
-    "photoArea": { "x": 0, "y": 0, "width": 1600, "height": 1600, "borderRadius": 0 },
+    "photoArea": {
+      "x": 0,
+      "y": 0,
+      "width": 1600,
+      "height": 1600,
+      "borderRadius": 0
+    },
     "status": "ACTIVE",
     "sortOrder": 5
   },
@@ -71,12 +127,23 @@
     "id": "piti-charoen",
     "name": "พิธีเจริญพระพุทธมนต์ มิ่งมงคล",
     "category": "พิธี",
-    "keywords": ["พิธี", "เจริญพระพุทธมนต์", "มงคล", "สิริมงคล"],
+    "keywords": [
+      "พิธี",
+      "เจริญพระพุทธมนต์",
+      "มงคล",
+      "สิริมงคล"
+    ],
     "filename": "assets/frames/piti-charoen.png",
     "thumbnail": "assets/frames/piti-charoen-thumb.png",
     "canvasWidth": 1600,
     "canvasHeight": 1600,
-    "photoArea": { "x": 0, "y": 0, "width": 1600, "height": 1600, "borderRadius": 0 },
+    "photoArea": {
+      "x": 0,
+      "y": 0,
+      "width": 1600,
+      "height": 1600,
+      "borderRadius": 0
+    },
     "status": "ACTIVE",
     "sortOrder": 6
   },
@@ -84,12 +151,23 @@
     "id": "suan-mon",
     "name": "ปฏิบัติธรรมกลั่นใจใส สว่างบริสุทธิ์",
     "category": "อื่น ๆ",
-    "keywords": ["ปฏิบัติธรรม", "สมาธิ", "กลั่นใจใส", "ภาวนา"],
+    "keywords": [
+      "ปฏิบัติธรรม",
+      "สมาธิ",
+      "กลั่นใจใส",
+      "ภาวนา"
+    ],
     "filename": "assets/frames/suan-mon.png",
     "thumbnail": "assets/frames/suan-mon-thumb.png",
     "canvasWidth": 1600,
     "canvasHeight": 1600,
-    "photoArea": { "x": 0, "y": 0, "width": 1600, "height": 1600, "borderRadius": 0 },
+    "photoArea": {
+      "x": 0,
+      "y": 0,
+      "width": 1600,
+      "height": 1600,
+      "borderRadius": 0
+    },
     "status": "ACTIVE",
     "sortOrder": 7
   }

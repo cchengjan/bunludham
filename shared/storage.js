@@ -14,8 +14,8 @@
 // =========================================================================
 const FrameStore = (() => {
   const STORAGE_KEY = 'pfs_frames_v2';
-  const SEED_URL = 'config/frames.json';
-  const ALT_SEED_URL = '../config/frames.json';
+  const SEED_URL = 'frames.json';
+  const ALT_SEED_URL = 'config/frames.json';
 
   const HASH_KEY = 'pfs_frames_seed_hash';
   let cache = null;
