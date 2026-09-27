@@ -1,7 +1,7 @@
 // PFS_CONFIG — ตั้งค่าการเชื่อมต่อ Google Apps Script Web App
-// ไม่มี secret / api key ใด ๆ ในไฟล์นี้ ปลอดภัยต่อการเปิดเผยใน Browser
+// รองรับทั้งการระบุในไฟล์โดยตรง หรือการตั้งค่าผ่านหน้า Admin (บันทึกใน LocalStorage)
 window.PFS_CONFIG = {
-  // วาง URL ของ Google Apps Script Web App ที่ deploy แล้วตรงนี้ (เช่น https://script.google.com/macros/s/.../exec)
-  // หากเว้นว่างไว้ ระบบจะทำงานแบบ Full Offline / Local Browser ได้อย่างสมบูรณ์ 100%
-  gasWebAppUrl: '',
+  // หากต้องการระบุแบบตายตัว ให้ใส่ URL ที่นี่ (เช่น 'https://script.google.com/macros/s/.../exec')
+  // หรือปล่อยว่างไว้ ระบบจะดึงค่าที่ตั้งผ่านหน้า Admin (LocalStorage) มาใช้อัตโนมัติ
+  gasWebAppUrl: localStorage.getItem('pfs_gas_url') || '',
 };

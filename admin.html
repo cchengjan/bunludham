@@ -42,6 +42,9 @@
     <button type="button" class="tab-nav-btn" data-tab="tab-drive">
       <span>☁️</span> Google Drive
     </button>
+    <button type="button" class="tab-nav-btn" data-tab="tab-backup">
+      <span>📦</span> สำรอง & กู้คืนข้อมูล
+    </button>
   </nav>
 
   <!-- ================= Tab 1: Frame Manager ================= -->
@@ -237,35 +240,134 @@
   <!-- ================= Tab 4: Google Drive ================= -->
   <section id="tab-drive" class="admin-tab-content hidden">
     <div class="card">
-      <h2 class="card-title">
-        <span>☁️</span> การเชื่อมต่อ Google Drive Storage
-      </h2>
-      <p style="font-size:0.9rem; color:var(--muted); line-height:1.6;">
-        ระบบใช้ <strong>Google Apps Script Web App</strong> เป็นสะพานเชื่อมไปยัง Google Drive โดยไม่ต้องเปิดเผย Credentials ใด ๆ ฝั่งผู้ใช้
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+        <h2 class="card-title" style="margin:0;">
+          <span>☁️</span> การเชื่อมต่อ Google Drive Storage
+        </h2>
+        <span id="gasStatusPill" class="status-pill offline">⚪ ยังไม่ได้เชื่อมต่อ</span>
+      </div>
+      <p style="font-size:0.9rem; color:var(--muted); line-height:1.6; margin-top:8px;">
+        ระบบใช้ <strong>Google Apps Script Web App</strong> เป็นสะพานเชื่อมไปยัง Google Drive โดยตรง ทำให้จัดเก็บภาพและซิงก์ข้อมูลได้อย่างปลอดภัย ไม่ต้องใช้เซิร์ฟเวอร์
       </p>
 
-      <div class="field" style="margin-top:12px;">
+      <div class="field" style="margin-top:14px;">
         <label>Google Apps Script Web App URL</label>
         <input type="text" id="inputGasUrl" placeholder="https://script.google.com/macros/s/.../exec">
       </div>
 
-      <div style="background:var(--bg-warm); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:16px; margin-top:12px;">
-        <h4 style="color:var(--deep-teal); margin-bottom:8px;">📁 โครงสร้างโฟลเดอร์บน Google Drive:</h4>
+      <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap;">
+        <button type="button" class="primary" id="btnSaveGasConfig">💾 บันทึกการตั้งค่า</button>
+        <button type="button" id="btnTestDrive">⚡ ทดสอบการเชื่อมต่อ</button>
+        <button type="button" id="btnCopyGasCode">📋 คัดลอกโค้ด Google Apps Script (Code.gs)</button>
+        <button type="button" id="btnToggleGasGuide">📖 ดูขั้นตอนการติดตั้ง</button>
+      </div>
+
+      <!-- Collapsible Guide -->
+      <div id="gasGuideBox" class="guide-box hidden">
+        <h3 style="color:var(--deep-teal); font-size:0.95rem; margin-bottom:6px;">🚀 วิธีสร้างและ Deploy Google Apps Script (3 นาที):</h3>
+        <div class="guide-step">
+          <div class="step-num">1</div>
+          <div>ไปที่ <a href="https://script.google.com/" target="_blank" style="color:var(--emerald); font-weight:600;">script.google.com</a> แล้วกดปุ่ม <strong>"โครงการใหม่" (New project)</strong></div>
+        </div>
+        <div class="guide-step">
+          <div class="step-num">2</div>
+          <div>กดปุ่ม <strong>"📋 คัดลอกโค้ด Google Apps Script"</strong> ด้านบน แล้วนำไปวางแทนที่เนื้อหาในไฟล์ <code>Code.gs</code> ทั้งหมด จากนั้นกดบันทึก 💾</div>
+        </div>
+        <div class="guide-step">
+          <div class="step-num">3</div>
+          <div>กดปุ่มสีน้ำเงิน <strong>"ทำให้ใช้งานได้" (Deploy)</strong> มุมบนขวา → เลือก <strong>"การทำให้ใช้งานได้รายการใหม่" (New deployment)</strong></div>
+        </div>
+        <div class="guide-step">
+          <div class="step-num">4</div>
+          <div>เลือกประเภท <strong>"เว็บแอป" (Web app)</strong> | <em>ดำเนินการในฐานะ:</em> <strong>ฉัน (Me)</strong> | <em>ผู้มีสิทธิ์เข้าถึง:</em> <strong>ทุกคน (Anyone)</strong> → กด "ทำให้ใช้งานได้"</div>
+        </div>
+        <div class="guide-step">
+          <div class="step-num">5</div>
+          <div>คัดลอก <strong>URL เว็บแอป</strong> ที่ได้มาวางในช่องด้านบน แล้วกด <strong>"💾 บันทึกการตั้งค่า"</strong> ได้ทันที!</div>
+        </div>
+      </div>
+
+      <div style="background:var(--bg-warm); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:16px; margin-top:16px;">
+        <h4 style="color:var(--deep-teal); margin-bottom:8px;">📁 โครงสร้างโฟลเดอร์อัตโนมัติบน Google Drive:</h4>
         <pre style="font-size:0.85rem; color:var(--charcoal-soft); font-family:monospace; line-height:1.6;">
 Photo Frame Studio/
+├── Photo_Log           (Google Sheet บันทึกวันเวลา ชื่อภาพ และลิงก์ไฟล์)
 ├── Frames/             (ไฟล์ PNG กรอบรูปภาพ)
 ├── Original Photos/    (ภาพต้นฉบับของผู้ร่วมกิจกรรม)
 ├── Finished Images/    (ภาพประกอบกรอบที่บันทึกแล้ว)
 └── Activity Images/    (ภาพที่ส่งเข้าร่วมกิจกรรมบน Wall)</pre>
       </div>
+    </div>
+  </section>
 
-      <div style="display:flex; gap:12px; margin-top:16px;">
-        <button type="button" class="primary" id="btnSaveGasConfig">💾 บันทึกการตั้งค่า</button>
-        <button type="button" id="btnTestDrive">⚡ ทดสอบการเชื่อมต่อ</button>
+  <!-- ================= Tab 5: Backup & Restore ================= -->
+  <section id="tab-backup" class="admin-tab-content hidden">
+    <div class="card">
+      <h2 class="card-title">
+        <span>📦</span> สำรองข้อมูลและกู้คืน (Backup & Restore)
+      </h2>
+      <p style="font-size:0.9rem; color:var(--muted); line-height:1.6;">
+        จัดการข้อมูลทั้งหมดของระบบ (กรอบภาพ คำคม ประวัติกิจกรรม และการตั้งค่า) ดาวน์โหลดเป็นไฟล์ JSON หรือกู้คืนข้ามอุปกรณ์ได้ทันที
+      </p>
+
+      <div class="backup-grid">
+        <div class="backup-card">
+          <div>
+            <h3 style="color:var(--deep-teal); margin-bottom:8px;">📥 ส่งออกข้อมูล (Export Backup)</h3>
+            <p style="font-size:0.85rem; color:var(--muted); margin-bottom:16px;">
+              ดาวน์โหลดข้อมูลระบบทั้งหมดเป็นไฟล์ JSON เพื่อสำรองเก็บไว้ในคอมพิวเตอร์ของคุณ
+            </p>
+          </div>
+          <button type="button" class="primary" id="btnExportBackup">
+            💾 ดาวน์โหลดไฟล์ Backup (.json)
+          </button>
+        </div>
+
+        <div class="backup-card">
+          <div>
+            <h3 style="color:var(--deep-teal); margin-bottom:8px;">📤 นำเข้าข้อมูล (Import Restore)</h3>
+            <p style="font-size:0.85rem; color:var(--muted); margin-bottom:16px;">
+              เลือกไฟล์ Backup (.json) เพื่อกู้คืนข้อมูลกรอบภาพและคำคมทั้งหมด
+            </p>
+          </div>
+          <div>
+            <input type="file" id="importFileInput" accept=".json" style="display:none;">
+            <button type="button" id="btnImportBackup">
+              📂 เลือกไฟล์ Backup เพื่อกู้คืน
+            </button>
+          </div>
+        </div>
+
+        <div class="backup-card" style="border-color:#FCA5A5; background:#FFF5F5;">
+          <div>
+            <h3 style="color:var(--danger); margin-bottom:8px;">⚠️ รีเซ็ตระบบ (Reset to Defaults)</h3>
+            <p style="font-size:0.85rem; color:var(--muted); margin-bottom:16px;">
+              ล้างแคชในเครื่องและโหลดข้อมูลเริ่มต้นทั้งหมด (5 กรอบรูปมาตรฐาน, 7 หมวดคำคม)
+            </p>
+          </div>
+          <button type="button" class="danger" id="btnResetDefaults">
+            🔄 รีเซ็ตกลับสู่ค่าเริ่มต้นระบบ
+          </button>
+        </div>
       </div>
     </div>
   </section>
 
+</div>
+
+<!-- Admin PIN Passcode Modal -->
+<div class="pin-overlay hidden" id="pinModal">
+  <div class="pin-card">
+    <div style="font-size:2.5rem; margin-bottom:8px;">🔐</div>
+    <h2 style="color:var(--deep-teal); font-size:1.3rem;">เข้าสู่ระบบ Admin</h2>
+    <p style="color:var(--muted); font-size:0.85rem; margin-top:4px;">กรุณากรอกรหัสผ่านเพื่อจัดการระบบ</p>
+    <input type="password" id="adminPinInput" class="pin-input" maxlength="6" placeholder="••••" autofocus>
+    <div style="display:flex; gap:10px; justify-content:center;">
+      <button type="button" class="primary" id="btnVerifyPin">ยืนยัน</button>
+      <button type="button" id="btnCancelPin" onclick="window.location.href='index.html'">กลับหน้าหลัก</button>
+    </div>
+    <p style="color:var(--muted); font-size:0.75rem; margin-top:14px;">(รหัสผ่านเริ่มต้น: <strong>8888</strong>)</p>
+  </div>
 </div>
 
 <div class="toast" id="adminToast"></div>

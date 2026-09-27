@@ -66,6 +66,21 @@
   const inputGasUrl = document.getElementById('inputGasUrl');
   const btnSaveGasConfig = document.getElementById('btnSaveGasConfig');
   const btnTestDrive = document.getElementById('btnTestDrive');
+  const gasStatusPill = document.getElementById('gasStatusPill');
+  const btnCopyGasCode = document.getElementById('btnCopyGasCode');
+  const btnToggleGasGuide = document.getElementById('btnToggleGasGuide');
+  const gasGuideBox = document.getElementById('gasGuideBox');
+
+  // Tab 5: Backup & Restore
+  const btnExportBackup = document.getElementById('btnExportBackup');
+  const btnImportBackup = document.getElementById('btnImportBackup');
+  const importFileInput = document.getElementById('importFileInput');
+  const btnResetDefaults = document.getElementById('btnResetDefaults');
+
+  // PIN Auth
+  const pinModal = document.getElementById('pinModal');
+  const adminPinInput = document.getElementById('adminPinInput');
+  const btnVerifyPin = document.getElementById('btnVerifyPin');
 
   // ---------------------------------------------------------------
   // State
@@ -563,36 +578,230 @@
   }
 
   // ---------------------------------------------------------------
-  // Phase 8: Google Drive Config
+  // Phase 8: Google Drive Config & Storage Sync
   // ---------------------------------------------------------------
-  function initDriveConfig() {
-    inputGasUrl.value = (window.PFS_CONFIG && window.PFS_CONFIG.gasWebAppUrl) || '';
+  function updateGasPillStatus(isOnline) {
+    if (!gasStatusPill) return;
+    if (isOnline) {
+      gasStatusPill.className = 'status-pill online';
+      gasStatusPill.textContent = '🟢 เชื่อมต่อพร้อมใช้งาน';
+    } else {
+      const hasUrl = !!((inputGasUrl && inputGasUrl.value.trim()) || localStorage.getItem('pfs_gas_url'));
+      gasStatusPill.className = 'status-pill offline';
+      gasStatusPill.textContent = hasUrl ? '🟡 มี URL (ยังไม่ได้ทดสอบ)' : '⚪ ยังไม่ได้เชื่อมต่อ';
+    }
   }
 
-  btnSaveGasConfig.addEventListener('click', () => {
-    const val = inputGasUrl.value.trim();
-    if (!window.PFS_CONFIG) window.PFS_CONFIG = {};
-    window.PFS_CONFIG.gasWebAppUrl = val;
-    showToast('บันทึกการตั้งค่า Google Drive สำเร็จ');
-  });
+  function initDriveConfig() {
+    const savedUrl = localStorage.getItem('pfs_gas_url') || (window.PFS_CONFIG && window.PFS_CONFIG.gasWebAppUrl) || '';
+    if (inputGasUrl) inputGasUrl.value = savedUrl;
+    if (window.PFS_CONFIG) window.PFS_CONFIG.gasWebAppUrl = savedUrl;
+    updateGasPillStatus(false);
+  }
 
-  btnTestDrive.addEventListener('click', async () => {
-    const url = inputGasUrl.value.trim();
-    if (!url) {
-      showToast('กรุณากรอก Google Apps Script Web App URL ก่อนทดสอบ', true);
-      return;
+  if (btnSaveGasConfig) {
+    btnSaveGasConfig.addEventListener('click', () => {
+      const val = inputGasUrl.value.trim();
+      localStorage.setItem('pfs_gas_url', val);
+      if (!window.PFS_CONFIG) window.PFS_CONFIG = {};
+      window.PFS_CONFIG.gasWebAppUrl = val;
+      updateGasPillStatus(false);
+      showToast('บันทึกการตั้งค่า Google Drive สำเร็จ');
+    });
+  }
+
+  if (btnTestDrive) {
+    btnTestDrive.addEventListener('click', async () => {
+      const url = inputGasUrl.value.trim();
+      if (!url) {
+        showToast('กรุณากรอก Google Apps Script Web App URL ก่อนทดสอบ', true);
+        return;
+      }
+      showToast('กำลังทดสอบการเชื่อมต่อ...');
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          updateGasPillStatus(true);
+          showToast('เชื่อมต่อสำเร็จ! Google Apps Script ตอบรับแล้ว', false);
+        } else {
+          showToast('เชื่อมต่อได้แต่พบ HTTP ' + res.status, true);
+        }
+      } catch (e) {
+        showToast('ไม่สามารถเชื่อมต่อได้ (อาจติดสิทธิ์ Anyone): ' + e.message, true);
+      }
+    });
+  }
+
+  if (btnToggleGasGuide) {
+    btnToggleGasGuide.addEventListener('click', () => {
+      if (gasGuideBox) gasGuideBox.classList.toggle('hidden');
+    });
+  }
+
+  if (btnCopyGasCode) {
+    btnCopyGasCode.addEventListener('click', async () => {
+      try {
+        let codeText = '';
+        try {
+          const res = await fetch('backend/Code.gs');
+          if (res.ok) codeText = await res.text();
+        } catch (_) {}
+
+        if (!codeText) {
+          codeText = `// Photo Frame Studio — Google Apps Script Backend (Code.gs)\n` +
+            `var ROOT_FOLDER_NAME = "Photo Frame Studio";\n` +
+            `var SUB_FOLDERS = { "original": "Original Photos", "finished": "Finished Images", "activity": "Activity Images", "frame": "Frames", "other": "Uploads" };\n` +
+            `function doGet(e) { return ContentService.createTextOutput(JSON.stringify({ ok: true, status: "active" })).setMimeType(ContentService.MimeType.JSON); }\n` +
+            `function doPost(e) {\n` +
+            `  try {\n` +
+            `    var p = JSON.parse(e.postData.contents);\n` +
+            `    var blob = Utilities.newBlob(Utilities.base64Decode(p.dataBase64), p.mimeType || 'image/png', p.filename || 'img.png');\n` +
+            `    var root = DriveApp.getFoldersByName(ROOT_FOLDER_NAME).hasNext() ? DriveApp.getFoldersByName(ROOT_FOLDER_NAME).next() : DriveApp.createFolder(ROOT_FOLDER_NAME);\n` +
+            `    var subName = SUB_FOLDERS[p.type] || "Uploads";\n` +
+            `    var target = root.getFoldersByName(subName).hasNext() ? root.getFoldersByName(subName).next() : root.createFolder(subName);\n` +
+            `    var file = target.createFile(blob);\n` +
+            `    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);\n` +
+            `    return ContentService.createTextOutput(JSON.stringify({ ok: true, fileId: file.getId(), url: file.getUrl() })).setMimeType(ContentService.MimeType.JSON);\n` +
+            `  } catch(err) { return ContentService.createTextOutput(JSON.stringify({ ok: false, error: err.toString() })).setMimeType(ContentService.MimeType.JSON); }\n` +
+            `}`;
+        }
+
+        await navigator.clipboard.writeText(codeText);
+        showToast('คัดลอกโค้ด Google Apps Script ลงคลิปบอร์ดแล้ว!');
+      } catch (err) {
+        showToast('ไม่สามารถคัดลอกได้อัตโนมัติ: กรุณาเปิดไฟล์ backend/Code.gs', true);
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------
+  // Phase 9: Backup & Restore
+  // ---------------------------------------------------------------
+  if (btnExportBackup) {
+    btnExportBackup.addEventListener('click', async () => {
+      try {
+        const frames = await FrameStore.getAll();
+        const quotes = await QuoteStore.getAll();
+        const activities = await ActivityStore.getAll();
+        const gasUrl = localStorage.getItem('pfs_gas_url') || '';
+
+        const backupData = {
+          version: '2.0',
+          exportedAt: new Date().toISOString(),
+          settings: { gasWebAppUrl: gasUrl },
+          frames,
+          quotes,
+          activities
+        };
+
+        const jsonStr = JSON.stringify(backupData, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        const dateStr = new Date().toISOString().slice(0, 10);
+        a.href = url;
+        a.download = `PhotoFrameStudio_Backup_${dateStr}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('ดาวน์โหลดไฟล์ Backup สำเร็จ');
+      } catch (e) {
+        showToast('เกิดข้อผิดพลาดในการ Export: ' + e.message, true);
+      }
+    });
+  }
+
+  if (btnImportBackup && importFileInput) {
+    btnImportBackup.addEventListener('click', () => {
+      importFileInput.click();
+    });
+
+    importFileInput.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      try {
+        const text = await file.text();
+        const data = JSON.parse(text);
+
+        if (!data.frames && !data.quotes) {
+          throw new Error('รูปแบบไฟล์ Backup ไม่ถูกต้อง');
+        }
+
+        if (Array.isArray(data.frames)) {
+          localStorage.setItem('pfs_frames_v2', JSON.stringify(data.frames));
+        }
+        if (Array.isArray(data.quotes)) {
+          localStorage.setItem('pfs_quotes_v2', JSON.stringify(data.quotes));
+        }
+        if (Array.isArray(data.activities)) {
+          localStorage.setItem('pfs_activities_v2', JSON.stringify(data.activities));
+        }
+        if (data.settings && data.settings.gasWebAppUrl) {
+          localStorage.setItem('pfs_gas_url', data.settings.gasWebAppUrl);
+        }
+
+        showToast('กู้คืนข้อมูลสำเร็จ! กำลังรีเฟรชระบบ...');
+        setTimeout(() => window.location.reload(), 1200);
+      } catch (err) {
+        showToast('ไม่สามารถนำเข้าไฟล์ได้: ' + err.message, true);
+      }
+      importFileInput.value = '';
+    });
+  }
+
+  if (btnResetDefaults) {
+    btnResetDefaults.addEventListener('click', () => {
+      if (confirm('คำเตือน: คุณต้องการล้างข้อมูลและรีเซ็ตระบบกลับสู่ค่าเริ่มต้นทั้งหมดใช่หรือไม่? ข้อมูลที่แก้ไขเองจะถูกลบ')) {
+        localStorage.removeItem('pfs_frames_v2');
+        localStorage.removeItem('pfs_quotes_v2');
+        localStorage.removeItem('pfs_activities_v2');
+        showToast('รีเซ็ตระบบเรียบร้อย กำลังโหลดข้อมูลเริ่มต้น...');
+        setTimeout(() => window.location.reload(), 1000);
+      }
+    });
+  }
+
+  // ---------------------------------------------------------------
+  // Admin PIN Auth
+  // ---------------------------------------------------------------
+  const DEFAULT_ADMIN_PIN = '8888';
+
+  function initPinAuth() {
+    const isAuthed = sessionStorage.getItem('pfs_admin_auth') === 'true';
+    if (!isAuthed && pinModal) {
+      pinModal.classList.remove('hidden');
+      if (adminPinInput) adminPinInput.focus();
     }
-    showToast('กำลังทดสอบการเชื่อมต่อ...');
-    try {
-      const res = await fetch(url);
-      showToast('เชื่อมต่อสำเร็จ! Google Apps Script ตอบรับแล้ว', false);
-    } catch (e) {
-      showToast('ไม่สามารถเชื่อมต่อได้: ' + e.message, true);
-    }
-  });
+  }
+
+  if (btnVerifyPin && adminPinInput) {
+    const verify = () => {
+      const entered = adminPinInput.value.trim();
+      const currentPin = localStorage.getItem('pfs_admin_pin') || DEFAULT_ADMIN_PIN;
+      if (entered === currentPin) {
+        sessionStorage.setItem('pfs_admin_auth', 'true');
+        pinModal.classList.add('hidden');
+        showToast('ยืนยันตัวตนสำเร็จ ยินดีต้อนรับสู่แผงควบคุม');
+      } else {
+        showToast('รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง', true);
+        adminPinInput.value = '';
+        adminPinInput.focus();
+      }
+    };
+
+    btnVerifyPin.addEventListener('click', verify);
+    adminPinInput.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') verify();
+    });
+  }
 
   // ---------------------------------------------------------------
   // Boot
   // ---------------------------------------------------------------
+  initPinAuth();
+  initDriveConfig();
   renderFrameList();
 })();
+
