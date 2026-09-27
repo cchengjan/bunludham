@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Photo Frame Studio — ภาพกิจกรรมมหากุศล</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- ================= Site Header ================= -->
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand-wrap" href="#top" id="brandHomeLink">
+        <div class="brand-icon">🪷</div>
+        <div class="brand-titles">
+          <div class="brand-name">
+            Photo Frame Studio
+            <span class="badge-gold">พรีเมียม</span>
+          </div>
+          <span class="brand-tagline">สร้างภาพความประทับใจ ร่วมเป็นส่วนหนึ่งของกิจกรรม</span>
+        </div>
+      </a>
+      <div class="header-actions">
+        <a href="#activity-wall" class="nav-link">กิจกรรมชุมชน</a>
+        <a href="admin.html" class="nav-link admin-btn">
+          <span>⚙️</span> จัดการระบบ
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= Hero Banner & Quote of the Day ================= -->
+  <section class="hero-banner" id="top">
+    <div class="hero-card">
+      <div class="hero-quote-pill">
+        <span>✨</span> คำคมข้อคิดประจำวัน
+      </div>
+      <h1 class="hero-title">
+        บันทึกภาพบุญ <span class="accent">อันงดงามและทรงคุณค่า</span>
+      </h1>
+      <p class="hero-quote-text" id="heroQuoteDisplay">
+        “จิตที่ผ่องใส ย่อมนำความสุขและความสำเร็จอันไพบูลย์มาสู่ชีวิต”
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= Live Activity Statistics ================= -->
+  <section class="stats-banner">
+    <div class="stats-container" id="statsBar">
+      <div class="stat-item">
+        <div class="stat-icon">👥</div>
+        <div class="stat-content">
+          <span class="stat-num" id="statParticipants">—</span>
+          <span class="stat-label">ผู้ร่วมกิจกรรม</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon">🖼️</div>
+        <div class="stat-content">
+          <span class="stat-num" id="statCreations">—</span>
+          <span class="stat-label">ภาพที่สร้างแล้ว</span>
+        </div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-icon">🙏</div>
+        <div class="stat-content">
+          <span class="stat-num" id="statReactions">—</span>
+          <span class="stat-label">ร่วมอนุโมทนา</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Main Application Flow ================= -->
+  <main class="main-wrapper">
+
+    <!-- ================= หน้า 1: เลือกกรอบ (Frame Gallery) ================= -->
+    <section id="screen-picker" class="gallery-section">
+      <div class="section-header-row">
+        <h2 class="section-title">
+          <span>🖼️</span> เลือกกรอบภาพของคุณ
+        </h2>
+        <p class="section-desc">เลือกกรอบที่ระลึกที่ตรงกับวาระงานบุญและกิจกรรมพิเศษของคุณ</p>
+      </div>
+
+      <div class="filter-bar">
+        <div class="search-input-wrap">
+          <span class="search-icon-inside">🔍</span>
+          <input type="search" id="searchInput" class="search-input" placeholder="ค้นหากรอบ (ชื่อ / หมวดหมู่ / คำค้น เช่น กฐิน, มุทิตา, ตักบาตร)">
+        </div>
+        <div class="chips-wrap" id="categoryChips"></div>
+      </div>
+
+      <div class="frame-grid" id="frameGrid"></div>
+      <div class="empty-state hidden" id="emptyState">
+        <p>ไม่พบกรอบที่ตรงกับคำค้นหา ลองเปลี่ยนคำค้นหรือเลือกหมวดหมู่ "ทั้งหมด"</p>
+      </div>
+    </section>
+
+    <!-- ================= หน้า 2: จัดวางและแต่งภาพ (Photo Editor) ================= -->
+    <section id="screen-editor" class="editor-section hidden">
+      <div class="editor-topbar">
+        <button id="backToPicker" class="ghost-btn">
+          <span>←</span> เปลี่ยนกรอบ
+        </button>
+        <span class="current-frame-badge" id="currentFrameLabel">
+          <span>กรอบ:</span> <strong id="frameNameTxt">...</strong>
+        </span>
+      </div>
+
+      <!-- Action: Choose Photo -->
+      <label class="btn-choose-photo" for="fileInput" id="choosePhotoLabel">
+        <span>📷</span> เลือกรูปภาพจากเครื่อง
+      </label>
+      <input type="file" id="fileInput" accept="image/jpeg,image/png,image/jpg,image/heic,image/heif" style="display:none;">
+
+      <!-- Primary Canvas Stage -->
+      <div class="stage-container" id="stage">
+        <canvas id="canvas"></canvas>
+        <div class="canvas-placeholder" id="placeholder">
+          <div class="placeholder-icon">📸</div>
+          <p class="placeholder-text">แตะปุ่ม "เลือกรูปภาพ" ด้านบน เพื่อเริ่มจัดวางภาพถ่ายของคุณ</p>
+        </div>
+      </div>
+
+      <!-- History Bar: Undo & Redo -->
+      <div class="history-bar">
+        <div class="btn-icon-pair">
+          <button id="undoBtn" class="icon-btn" title="เลิกทำ (Undo)" disabled>↩</button>
+          <button id="redoBtn" class="icon-btn" title="ทำซ้ำ (Redo)" disabled>↪</button>
+        </div>
+        <span class="hint-text" style="padding:0;">ลากเลื่อนภาพ • บีบนิ้วเพื่อซูม</span>
+      </div>
+
+      <!-- Editor Tool Tabs -->
+      <div class="editor-tabs">
+        <button type="button" class="editor-tab-btn active" data-tab="tab-transform">
+          <span>🔍</span> จัดวาง
+        </button>
+        <button type="button" class="editor-tab-btn" data-tab="tab-adjust">
+          <span>🎨</span> โทนสี & ฟิลเตอร์
+        </button>
+        <button type="button" class="editor-tab-btn" data-tab="tab-text">
+          <span>💬</span> ข้อความ
+        </button>
+      </div>
+
+      <!-- Tab 1: Transform Panel -->
+      <div class="tab-panel" id="tab-transform">
+        <div class="controls-row">
+          <button type="button" id="fitBtn" class="control-btn" disabled>Fit พอดี</button>
+          <button type="button" id="resetBtn" class="control-btn" disabled>Reset</button>
+          <button type="button" id="zoomOut" class="control-btn" disabled aria-label="ซูมออก">−</button>
+          <span id="zoomVal" class="zoom-indicator">100%</span>
+          <button type="button" id="zoomIn" class="control-btn" disabled aria-label="ซูมเข้า">Zoom +</button>
+        </div>
+      </div>
+
+      <!-- Tab 2: Adjustments Panel -->
+      <div class="tab-panel hidden" id="tab-adjust">
+        <!-- 5 Presets -->
+        <div class="filter-presets">
+          <button type="button" class="preset-btn active" data-filter="original">
+            <span class="preset-preview-dot" style="background:#ddd;"></span>
+            <span class="preset-name">Original</span>
+          </button>
+          <button type="button" class="preset-btn" data-filter="warm">
+            <span class="preset-preview-dot" style="background:#FDE68A;"></span>
+            <span class="preset-name">Warm</span>
+          </button>
+          <button type="button" class="preset-btn" data-filter="soft">
+            <span class="preset-preview-dot" style="background:#F1F5F9;"></span>
+            <span class="preset-name">Soft</span>
+          </button>
+          <button type="button" class="preset-btn" data-filter="classic">
+            <span class="preset-preview-dot" style="background:#CBD5E1;"></span>
+            <span class="preset-name">Classic</span>
+          </button>
+          <button type="button" class="preset-btn" data-filter="bw">
+            <span class="preset-preview-dot" style="background:#475569;"></span>
+            <span class="preset-name">B&W</span>
+          </button>
+        </div>
+
+        <!-- Fine Sliders -->
+        <div class="adjust-slider-group">
+          <div class="slider-item">
+            <div class="slider-label-row">
+              <span>ความสว่าง (Brightness)</span>
+              <span id="brightnessVal" class="slider-val">0</span>
+            </div>
+            <input type="range" id="brightnessInput" class="luxury-range" min="-50" max="50" value="0">
+          </div>
+          <div class="slider-item">
+            <div class="slider-label-row">
+              <span>ความคมชัด (Contrast)</span>
+              <span id="contrastVal" class="slider-val">0</span>
+            </div>
+            <input type="range" id="contrastInput" class="luxury-range" min="-50" max="50" value="0">
+          </div>
+          <div class="slider-item">
+            <div class="slider-label-row">
+              <span>ความสดของสี (Saturation)</span>
+              <span id="saturationVal" class="slider-val">0</span>
+            </div>
+            <input type="range" id="saturationInput" class="luxury-range" min="-50" max="50" value="0">
+          </div>
+          <div class="slider-item">
+            <div class="slider-label-row">
+              <span>อุณหภูมิสี (Warmth)</span>
+              <span id="warmthVal" class="slider-val">0</span>
+            </div>
+            <input type="range" id="warmthInput" class="luxury-range" min="-50" max="50" value="0">
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Text & Quote Panel -->
+      <div class="tab-panel hidden" id="tab-text">
+        <div class="quote-picker-wrap">
+          <div class="user-custom-input-box">
+            <label style="font-size:0.82rem; font-weight:600; color:var(--deep-teal);">
+              ✍️ เพิ่มข้อความของฉัน
+            </label>
+            <input type="text" id="userCustomText" class="custom-text-input" placeholder="พิมพ์ชื่อ, คำอธิษฐานจิต, หรือข้อความสั้น ๆ ของคุณ..." maxlength="60">
+          </div>
+
+          <div style="font-size:0.82rem; font-weight:600; color:var(--deep-teal); margin-top:6px;">
+            🪷 หรือเลือกข้อความมงคลสำหรับภาพ
+          </div>
+          <div class="quick-quotes-list" id="quickQuotesList"></div>
+        </div>
+      </div>
+
+      <!-- Primary Action Buttons -->
+      <div class="editor-export-actions">
+        <button type="button" id="createImageBtn" class="btn-primary-action" disabled>
+          <span>✨</span> สร้างภาพกิจกรรม
+        </button>
+        <button type="button" id="uploadOriginalBtn" class="ghost-btn hidden" disabled>
+          ☁ บันทึกภาพต้นฉบับขึ้น Google Drive
+        </button>
+        <p class="hint-text">
+          🔒 ประมวลผลบนเบราว์เซอร์ของคุณอย่างปลอดภัย ไม่มีการส่งภาพไปวิเคราะห์หรือเปิดเผยโดยอัตโนมัติ
+        </p>
+      </div>
+    </section>
+
+    <!-- ================= Phase 9 & 10: Community Activity Wall ================= -->
+    <section class="activity-wall-section" id="activity-wall">
+      <div class="section-header-row">
+        <h2 class="section-title">
+          <span>บรรยากาศจากผู้ร่วมกิจกรรม</span>
+        </h2>
+        <p class="section-desc">ร่วมอนุโมทนาและชื่นชมภาพแห่งความสุขความประทับใจจากทุกคนในกิจกรรม</p>
+      </div>
+
+      <div class="activity-grid" id="activityGrid"></div>
+    </section>
+
+  </main>
+
+  <!-- ================= Celebration Modal (คุณเป็นส่วนหนึ่งของกิจกรรมแล้ว) ================= -->
+  <div class="modal-overlay" id="celebrationModal">
+    <div class="celebration-card">
+      <div class="celebration-badge">🪷</div>
+      <h3 class="celebration-title">คุณเป็นส่วนหนึ่งของกิจกรรมแล้ว</h3>
+      <p class="celebration-desc">ภาพกิจกรรมของคุณพร้อมแล้ว ร่วมบันทึกความทรงจำอันงดงามหรือส่งเข้าร่วมกิจกรรมเพื่อแบ่งปันบรรยากาศร่วมกัน</p>
+      
+      <img id="celebrationPreview" class="celebration-preview-img" alt="Preview">
+
+      <div class="celebration-options">
+        <button type="button" id="modalSubmitActivityBtn" class="btn-submit-community">
+          <span>🌟</span> ส่งภาพเข้าร่วมกิจกรรม
+        </button>
+        <button type="button" id="modalDownloadBtn" class="btn-download-direct">
+          <span>⬇</span> ดาวน์โหลดภาพ PNG
+        </button>
+        <button type="button" id="modalCloseBtn" class="ghost-btn" style="margin-top:4px;">
+          ปิดหน้าต่าง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Activity Confirmation Modal ================= -->
+  <div class="modal-overlay" id="confirmActivityModal">
+    <div class="celebration-card" style="max-width:420px;">
+      <div class="celebration-badge" style="font-size:24px; width:56px; height:56px;">📢</div>
+      <h3 class="celebration-title" style="font-size:1.2rem;">ยืนยันการส่งภาพ</h3>
+      <p class="celebration-desc" style="color:var(--charcoal-soft); font-weight:500;">
+        “ภาพนี้จะแสดงให้ผู้เข้าชมกิจกรรมเห็น ในหน้าบรรยากาศจากผู้ร่วมกิจกรรม”
+      </p>
+
+      <div style="width:100%; text-align:left;">
+        <label style="font-size:0.8rem; color:var(--muted); margin-bottom:4px; display:block;">ข้อความสั้นหรือคำอวยพร (ไม่บังคับ):</label>
+        <input type="text" id="activityCaptionInput" class="custom-text-input" placeholder="เช่น ขออนุโมทนาบุญกับทุกท่านครับ..." maxlength="80">
+      </div>
+
+      <div class="celebration-options" style="margin-top:8px;">
+        <button type="button" id="btnConfirmSendActivity" class="btn-submit-community">
+          <span>✨</span> ยืนยันส่งเข้ากิจกรรม
+        </button>
+        <button type="button" id="btnCancelSendActivity" class="ghost-btn">
+          ยกเลิก
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= Report Content Modal ================= -->
+  <div class="modal-overlay" id="reportModal">
+    <div class="celebration-card" style="max-width:380px;">
+      <h3 class="celebration-title" style="font-size:1.15rem;">รายงานเนื้อหา</h3>
+      <p class="celebration-desc">โปรดระบุเหตุผลในการรายงานภาพนี้</p>
+      <select id="reportReasonSelect" class="custom-text-input" style="margin-bottom:8px;">
+        <option value="เนื้อหาไม่เหมาะสม">เนื้อหาไม่เหมาะสม</option>
+        <option value="ละเมิดสิทธิส่วนบุคคล">ละเมิดสิทธิส่วนบุคคล</option>
+        <option value="ภาพไม่ตรงกับกิจกรรม">ภาพไม่ตรงกับกิจกรรม</option>
+        <option value="อื่นๆ">อื่นๆ</option>
+      </select>
+      <div class="celebration-options">
+        <button type="button" id="btnSubmitReport" class="btn-primary-action" style="padding:10px 16px; font-size:0.9rem;">ส่งรายงาน</button>
+        <button type="button" id="btnCancelReport" class="ghost-btn">ยกเลิก</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast-msg"></div>
+
+  <!-- Scripts -->
+  <script src="shared/storage.js"></script>
+  <script src="shared/drive-sync.js"></script>
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Photo Frame Studio — ระบบจัดการผู้ดูแลระบบ (Admin)</title>
+  <link rel="stylesheet" href="admin.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="wrap">
+
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="brand-admin">
+      <div class="brand-admin-icon">🪷</div>
+      <div class="admin-title-group">
+        <h1>Photo Frame Studio — Admin</h1>
+        <p>ศูนย์ควบคุมกรอบภาพ คลังคำคม และการดูแลเนื้อหากิจกรรม</p>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px; align-items:center;">
+      <a href="index.html" class="nav-back-btn" style="text-decoration:none; font-size:0.9rem; color:var(--deep-teal); font-weight:600;">
+        ← กลับหน้าเว็บผู้ใช้
+      </a>
+    </div>
+  </header>
+
+  <!-- Admin Navigation Tabs -->
+  <nav class="admin-nav-tabs">
+    <button type="button" class="tab-nav-btn active" data-tab="tab-frames">
+      <span>🖼️</span> จัดการกรอบภาพ
+    </button>
+    <button type="button" class="tab-nav-btn" data-tab="tab-quotes">
+      <span>💬</span> คลังคำคม / ข้อความ
+    </button>
+    <button type="button" class="tab-nav-btn" data-tab="tab-moderation">
+      <span>🛡️</span> ดูแลเนื้อหากิจกรรม
+    </button>
+    <button type="button" class="tab-nav-btn" data-tab="tab-drive">
+      <span>☁️</span> Google Drive
+    </button>
+  </nav>
+
+  <!-- ================= Tab 1: Frame Manager ================= -->
+  <section id="tab-frames" class="admin-tab-content">
+    <div class="card">
+      <div class="card-header-row">
+        <h2 class="card-title">
+          <span>🖼️</span> รายการกรอบภาพทั้งหมด
+        </h2>
+        <button type="button" id="btnAddFrame" class="primary">+ เพิ่มกรอบใหม่</button>
+      </div>
+      
+      <div id="frameListContainer"></div>
+      <p class="empty-list hidden" id="emptyFrameList" style="text-align:center; color:var(--muted); padding:30px;">
+        ยังไม่มีกรอบภาพ กดปุ่ม "+ เพิ่มกรอบใหม่" เพื่อเริ่มต้น
+      </p>
+    </div>
+
+    <!-- Frame Editor Card (with Phase 7 Visual Photo Area Editor) -->
+    <div class="card hidden" id="frameEditorCard" style="margin-top:20px;">
+      <h2 class="card-title" id="frameEditorTitle">
+        <span>✏️</span> กำหนดรายละเอียดกรอบภาพ
+      </h2>
+
+      <!-- Upload Rows -->
+      <div style="display:flex; flex-direction:column; gap:12px;">
+        <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+          <img id="framePngPreview" class="frame-row-thumb" style="width:80px; height:80px;" alt="">
+          <div>
+            <label class="btn primary" for="framePngInput" style="display:inline-block; cursor:pointer;">
+              📤 เลือกไฟล์ PNG กรอบรูป
+            </label>
+            <input type="file" id="framePngInput" accept="image/png" style="display:none;">
+            <div id="frameDimsTxt" style="font-size:0.8rem; color:var(--muted); margin-top:4px;"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Grid -->
+      <div class="form-grid">
+        <div class="field">
+          <label>ชื่อกรอบภาพ</label>
+          <input type="text" id="inputFrameName" placeholder="เช่น กฐิน ๑๑๘ ปี คุณยายอาจารย์">
+        </div>
+        <div class="field">
+          <label>หมวดหมู่</label>
+          <input type="text" id="inputFrameCategory" list="catList" placeholder="เช่น กฐิน, มุทิตาสักการะ, งานบุญ, พิธี">
+          <datalist id="catList">
+            <option value="กฐิน">
+            <option value="มุทิตาสักการะ">
+            <option value="งานบุญ">
+            <option value="พิธี">
+            <option value="อื่น ๆ">
+          </datalist>
+        </div>
+        <div class="field">
+          <label>คำค้นหา (คั่นด้วยจุลภาค)</label>
+          <input type="text" id="inputFrameKeywords" placeholder="กฐิน, งานบุญ, คุณยายอาจารย์">
+        </div>
+        <div class="field">
+          <label>สถานะการแสดงผล</label>
+          <select id="selectFrameStatus">
+            <option value="ACTIVE">ACTIVE (แสดงให้ผู้ใช้ทั่วไปเห็น)</option>
+            <option value="DRAFT">DRAFT (ฉบับร่าง ยังไม่เผยแพร่)</option>
+            <option value="HIDDEN">HIDDEN (ซ่อนชั่วคราว)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Visual Photo Area Editor -->
+      <div style="border-top:1px solid var(--border-subtle); padding-top:16px; margin-top:8px;">
+        <h3 style="font-size:1.05rem; color:var(--deep-teal); margin-bottom:4px;">
+          🎯 Frame Editor — กำหนดพื้นที่ใส่ภาพ (Photo Area)
+        </h3>
+        <p style="font-size:0.82rem; color:var(--muted); margin-bottom:12px;">
+          ลากกล่องสีแดงเพื่อย้ายตำแหน่ง / ลากจุดมุมล่างขวาเพื่อปรับขนาด หรือกรอกตัวเลขด้านล่างให้แม่นยำ
+        </p>
+
+        <div class="area-editor-container" id="visualAreaEditor">
+          <img id="visualEditorFrameImg" class="area-editor-img" alt="">
+          <div class="area-box-visual" id="visualBox">
+            <div class="area-handle-visual" id="visualHandle"></div>
+          </div>
+        </div>
+
+        <div class="area-numbers-grid" style="margin-top:14px;">
+          <div class="field"><label>X (แกนแนวนอน)</label><input type="number" id="numAreaX"></div>
+          <div class="field"><label>Y (แกนแนวตั้ง)</label><input type="number" id="numAreaY"></div>
+          <div class="field"><label>ความกว้าง (W)</label><input type="number" id="numAreaW"></div>
+          <div class="field"><label>ความสูง (H)</label><input type="number" id="numAreaH"></div>
+          <div class="field"><label>Border Radius (R)</label><input type="number" id="numAreaR" min="0"></div>
+        </div>
+
+        <div style="display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;">
+          <button type="button" id="btnPreviewRealPhoto">👁 Preview ภาพจริงในกรอบ</button>
+          <button type="button" id="btnResetArea">Reset พื้นที่ตรงกลาง</button>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display:flex; gap:12px; margin-top:16px;">
+        <button type="button" class="primary" id="btnSaveFrame">💾 บันทึกกรอบภาพ</button>
+        <button type="button" id="btnCancelFrame">ยกเลิก</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Tab 2: Quote / Message Library ================= -->
+  <section id="tab-quotes" class="admin-tab-content hidden">
+    <div class="card">
+      <div class="card-header-row">
+        <h2 class="card-title">
+          <span>💬</span> คลังคำคมและข้อความกิจกรรม
+        </h2>
+        <button type="button" id="btnAddQuote" class="primary">+ เพิ่มข้อความใหม่</button>
+      </div>
+      <p style="font-size:0.82rem; color:var(--muted); margin:-12px 0 0;">
+        ข้อความทั้งหมดถูกจัดเก็บเป็น Data ใน QuoteStore ไม่มีการ Hard-code ในระบบ
+      </p>
+
+      <div id="quoteListContainer"></div>
+    </div>
+
+    <!-- Quote Editor Card -->
+    <div class="card hidden" id="quoteEditorCard" style="margin-top:20px;">
+      <h2 class="card-title" id="quoteEditorTitle">
+        <span>✏️</span> เพิ่ม/แก้ไขข้อความ
+      </h2>
+
+      <div class="field">
+        <label>ข้อความ / คำคม</label>
+        <textarea id="inputQuoteText" rows="3" placeholder="พิมพ์ข้อความมงคล คำอวยพร หรือข้อคิด..."></textarea>
+      </div>
+
+      <div class="form-grid">
+        <div class="field">
+          <label>หมวดหมู่</label>
+          <select id="selectQuoteCategory">
+            <option value="🙏 อนุโมทนา">🙏 อนุโมทนา</option>
+            <option value="🌸 คำอวยพร">🌸 คำอวยพร</option>
+            <option value="✨ ข้อคิด">✨ ข้อคิด</option>
+            <option value="🪷 ธรรมะ">🪷 ธรรมะ</option>
+            <option value="💛 กำลังใจ">💛 กำลังใจ</option>
+            <option value="🎉 กิจกรรม">🎉 กิจกรรม</option>
+            <option value="📸 สำหรับภาพ">📸 สำหรับภาพ</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>สถานะ</label>
+          <select id="selectQuoteStatus">
+            <option value="ACTIVE">ACTIVE (เปิดใช้งาน)</option>
+            <option value="HIDDEN">HIDDEN (ซ่อนชั่วคราว)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Placements Selection (Phase 15) -->
+      <div class="field" style="margin-top:8px;">
+        <label>ตำแหน่งการใช้งาน (เลือกได้หลายตำแหน่ง):</label>
+        <div class="checkbox-group">
+          <label class="checkbox-item"><input type="checkbox" name="qPlace" value="home"> ☑ หน้าแรก (Hero)</label>
+          <label class="checkbox-item"><input type="checkbox" name="qPlace" value="editor"> ☑ Photo Editor (คำแนะนำ)</label>
+          <label class="checkbox-item"><input type="checkbox" name="qPlace" value="final"> ☑ Final (หน้าสำเร็จ)</label>
+          <label class="checkbox-item"><input type="checkbox" name="qPlace" value="activity"> ☑ Activity (Wall Card)</label>
+          <label class="checkbox-item"><input type="checkbox" name="qPlace" value="share"> ☑ Share Card</label>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:16px;">
+        <button type="button" class="primary" id="btnSaveQuote">💾 บันทึกข้อความ</button>
+        <button type="button" id="btnCancelQuote">ยกเลิก</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= Tab 3: Community Moderation ================= -->
+  <section id="tab-moderation" class="admin-tab-content hidden">
+    <div class="card">
+      <div class="card-header-row">
+        <h2 class="card-title">
+          <span>🛡️</span> จัดการเนื้อหาและภาพกิจกรรม (Moderation)
+        </h2>
+        <span style="font-size:0.85rem; color:var(--muted);">ผู้ดูแลระบบสามารถซ่อน ลบ หรือตรวจสอบรายงาน</span>
+      </div>
+
+      <div class="mod-grid" id="moderationGrid"></div>
+      <p class="empty-list hidden" id="emptyModList" style="text-align:center; color:var(--muted); padding:30px;">
+        ไม่มีภาพกิจกรรมในระบบขณะนี้
+      </p>
+    </div>
+  </section>
+
+  <!-- ================= Tab 4: Google Drive ================= -->
+  <section id="tab-drive" class="admin-tab-content hidden">
+    <div class="card">
+      <h2 class="card-title">
+        <span>☁️</span> การเชื่อมต่อ Google Drive Storage
+      </h2>
+      <p style="font-size:0.9rem; color:var(--muted); line-height:1.6;">
+        ระบบใช้ <strong>Google Apps Script Web App</strong> เป็นสะพานเชื่อมไปยัง Google Drive โดยไม่ต้องเปิดเผย Credentials ใด ๆ ฝั่งผู้ใช้
+      </p>
+
+      <div class="field" style="margin-top:12px;">
+        <label>Google Apps Script Web App URL</label>
+        <input type="text" id="inputGasUrl" placeholder="https://script.google.com/macros/s/.../exec">
+      </div>
+
+      <div style="background:var(--bg-warm); border:1px solid var(--border-subtle); border-radius:var(--radius-md); padding:16px; margin-top:12px;">
+        <h4 style="color:var(--deep-teal); margin-bottom:8px;">📁 โครงสร้างโฟลเดอร์บน Google Drive:</h4>
+        <pre style="font-size:0.85rem; color:var(--charcoal-soft); font-family:monospace; line-height:1.6;">
+Photo Frame Studio/
+├── Frames/             (ไฟล์ PNG กรอบรูปภาพ)
+├── Original Photos/    (ภาพต้นฉบับของผู้ร่วมกิจกรรม)
+├── Finished Images/    (ภาพประกอบกรอบที่บันทึกแล้ว)
+└── Activity Images/    (ภาพที่ส่งเข้าร่วมกิจกรรมบน Wall)</pre>
+      </div>
+
+      <div style="display:flex; gap:12px; margin-top:16px;">
+        <button type="button" class="primary" id="btnSaveGasConfig">💾 บันทึกการตั้งค่า</button>
+        <button type="button" id="btnTestDrive">⚡ ทดสอบการเชื่อมต่อ</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<div class="toast" id="adminToast"></div>
+
+<!-- Scripts -->
+<script src="shared/storage.js"></script>
+<script src="shared/drive-sync.js"></script>
+<script src="config.js"></script>
+<script src="admin.js"></script>
+</body>
+</html>

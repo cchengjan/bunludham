@@ -15,3 +15,7 @@ Thumbs.db
 
 # Temporary & Log files
 *.log
+
+# Reference / local backup files
+REF/
+

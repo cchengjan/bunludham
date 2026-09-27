@@ -1,0 +1,66 @@
+[
+  {
+    "id": "quote-1",
+    "text": "อนุโมทนาบุญใหญ่ ขอให้เจริญด้วยอายุ วรรณะ สุขะ พละ และปฏิภาณ",
+    "category": "🙏 อนุโมทนา",
+    "status": "ACTIVE",
+    "placements": ["home", "final", "activity", "share"],
+    "sortOrder": 1
+  },
+  {
+    "id": "quote-2",
+    "text": "จิตที่ผ่องใส ย่อมนำความสุขและความสำเร็จอันไพบูลย์มาสู่ชีวิต",
+    "category": "✨ ข้อคิด",
+    "status": "ACTIVE",
+    "placements": ["home", "editor", "activity"],
+    "sortOrder": 2
+  },
+  {
+    "id": "quote-3",
+    "text": "ขออาราธนาคุณพระศรีรัตนตรัย ดลบันดาลให้ท่านและครอบครัวประสบแต่ความสุขความเจริญ",
+    "category": "🌸 คำอวยพร",
+    "status": "ACTIVE",
+    "placements": ["editor", "final", "share"],
+    "sortOrder": 3
+  },
+  {
+    "id": "quote-4",
+    "text": "บุญเป็นเงาตามตัว นำพาสู่ความเจริญรุ่งเรืองทั้งทางโลกและทางธรรม",
+    "category": "🪷 ธรรมะ",
+    "status": "ACTIVE",
+    "placements": ["activity", "share"],
+    "sortOrder": 4
+  },
+  {
+    "id": "quote-5",
+    "text": "ใจที่หยุดนิ่ง คือพลังอันยิ่งใหญ่ สว่างไสวดุจดวงตะวันยามรุ่งอรุณ",
+    "category": "💛 กำลังใจ",
+    "status": "ACTIVE",
+    "placements": ["home", "editor", "activity"],
+    "sortOrder": 5
+  },
+  {
+    "id": "quote-6",
+    "text": "ร่วมเป็นส่วนหนึ่งแห่งประวัติศาสตร์บุญกฐิน ๑๑๘ ปี สานมโนปณิธานความดีอันยิ่งใหญ่",
+    "category": "🎉 กิจกรรม",
+    "status": "ACTIVE",
+    "placements": ["home", "final", "activity", "share"],
+    "sortOrder": 6
+  },
+  {
+    "id": "quote-7",
+    "text": "สุขใจที่ได้ร่วมบุญ สว่างใสในทุกมิติของชีวิต",
+    "category": "📸 สำหรับภาพ",
+    "status": "ACTIVE",
+    "placements": ["editor", "share"],
+    "sortOrder": 7
+  },
+  {
+    "id": "quote-8",
+    "text": "ใจใสเป็นบุญ ใจขุ่นเป็นบาป กลั่นกาย วาจา ใจ ให้บริสุทธิ์เสมอ",
+    "category": "🪷 ธรรมะ",
+    "status": "ACTIVE",
+    "placements": ["home", "editor"],
+    "sortOrder": 8
+  }
+]

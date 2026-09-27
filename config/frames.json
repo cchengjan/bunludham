@@ -1,0 +1,67 @@
+[
+  {
+    "id": "kathin-118",
+    "name": "กฐิน ๑๑๘ ปี คุณยายอาจารย์",
+    "category": "กฐิน",
+    "keywords": ["กฐิน", "งานบุญ", "นกยูง", "จันทร์ ขนนกยูง", "คุณยายอาจารย์"],
+    "filename": "assets/frames/kathin-118.png",
+    "thumbnail": "assets/frames/kathin-118-thumb.png",
+    "canvasWidth": 2351,
+    "canvasHeight": 2351,
+    "photoArea": { "x": 440, "y": 260, "width": 1470, "height": 1200, "borderRadius": 160 },
+    "status": "ACTIVE",
+    "sortOrder": 1
+  },
+  {
+    "id": "muthita",
+    "name": "มุทิตาสักการะ มหารัตนกตัญญู",
+    "category": "มุทิตาสักการะ",
+    "keywords": ["มุทิตา", "สักการะ", "กตัญญู", "พระเถระ"],
+    "filename": "assets/frames/muthita.png",
+    "thumbnail": "assets/frames/muthita-thumb.png",
+    "canvasWidth": 1600,
+    "canvasHeight": 1600,
+    "photoArea": { "x": 200, "y": 220, "width": 1200, "height": 1040, "borderRadius": 80 },
+    "status": "ACTIVE",
+    "sortOrder": 2
+  },
+  {
+    "id": "boon-anamai",
+    "name": "มหาทานบารมี ตักบาตรพระ",
+    "category": "งานบุญ",
+    "keywords": ["งานบุญ", "ตักบาตร", "ทานบารมี", "บุญกุศล"],
+    "filename": "assets/frames/boon-anamai.png",
+    "thumbnail": "assets/frames/boon-anamai-thumb.png",
+    "canvasWidth": 1600,
+    "canvasHeight": 1600,
+    "photoArea": { "x": 200, "y": 180, "width": 1200, "height": 1080, "borderRadius": 120 },
+    "status": "ACTIVE",
+    "sortOrder": 3
+  },
+  {
+    "id": "piti-charoen",
+    "name": "พิธีเจริญพระพุทธมนต์ มิ่งมงคล",
+    "category": "พิธี",
+    "keywords": ["พิธี", "เจริญพระพุทธมนต์", "มงคล", "สิริมงคล"],
+    "filename": "assets/frames/piti-charoen.png",
+    "thumbnail": "assets/frames/piti-charoen-thumb.png",
+    "canvasWidth": 1600,
+    "canvasHeight": 1600,
+    "photoArea": { "x": 220, "y": 240, "width": 1160, "height": 1000, "borderRadius": 100 },
+    "status": "ACTIVE",
+    "sortOrder": 4
+  },
+  {
+    "id": "suan-mon",
+    "name": "ปฏิบัติธรรมกลั่นใจใส สว่างบริสุทธิ์",
+    "category": "อื่น ๆ",
+    "keywords": ["ปฏิบัติธรรม", "สมาธิ", "กลั่นใจใส", "ภาวนา"],
+    "filename": "assets/frames/suan-mon.png",
+    "thumbnail": "assets/frames/suan-mon-thumb.png",
+    "canvasWidth": 1600,
+    "canvasHeight": 1600,
+    "photoArea": { "x": 200, "y": 200, "width": 1200, "height": 1050, "borderRadius": 160 },
+    "status": "ACTIVE",
+    "sortOrder": 5
+  }
+]
