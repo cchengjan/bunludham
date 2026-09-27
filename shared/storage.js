@@ -13,12 +13,47 @@
 // 1. FrameStore
 // =========================================================================
 const FrameStore = (() => {
-  const STORAGE_KEY = 'pfs_frames_v2';
+  const STORAGE_KEY = 'pfs_frames_v3';
+  const OLD_STORAGE_KEY = 'pfs_frames_v2';
   const SEED_URL = 'frames.json';
   const ALT_SEED_URL = 'config/frames.json';
 
-  const HASH_KEY = 'pfs_frames_seed_hash';
+  const HASH_KEY = 'pfs_frames_seed_hash_v3';
   let cache = null;
+
+  function sanitizeFrame(f) {
+    if (!f) return f;
+    if (f.id === 'kathin-peacock-blue') {
+      f.filename = 'assets/frames/kathin-peacock-blue.png';
+      f.thumbnail = 'assets/frames/kathin-peacock-blue-thumb.png';
+      f.canvasWidth = 1024;
+      f.canvasHeight = 1024;
+      f.showInUserMode = true;
+      if (f.photoArea) {
+        f.photoArea.width = 1024;
+        f.photoArea.height = 1024;
+      }
+    } else if (f.id === 'kathin-peacock-gold') {
+      if (!f.filename || f.filename.startsWith('blob:')) {
+        f.filename = 'assets/frames/kathin-peacock-gold.png';
+      }
+      if (!f.thumbnail || f.thumbnail.startsWith('blob:')) {
+        f.thumbnail = 'assets/frames/kathin-peacock-gold-thumb.png';
+      }
+      f.canvasWidth = 1024;
+      f.canvasHeight = 1024;
+      f.showInUserMode = true;
+    } else if (f.id === 'kathin-118') {
+      if (!f.filename || f.filename.startsWith('blob:')) {
+        f.filename = 'assets/frames/kathin-118.png';
+      }
+      if (!f.thumbnail || f.thumbnail.startsWith('blob:')) {
+        f.thumbnail = 'assets/frames/kathin-118-thumb.png';
+      }
+      f.showInUserMode = true;
+    }
+    return f;
+  }
 
   function persist() {
     try {
@@ -35,9 +70,9 @@ const FrameStore = (() => {
   }
 
   async function ensureLoaded() {
-    if (cache) return cache;
+    if (cache) return cache.map(sanitizeFrame);
 
-    // Check if server seed has updated on GitHub (Method B)
+    // 1. Fetch fresh server seed with cache-busting
     try {
       let seedRes = await fetch(SEED_URL + '?v=' + Date.now(), { cache: 'no-store' });
       if (!seedRes.ok) seedRes = await fetch(ALT_SEED_URL + '?v=' + Date.now(), { cache: 'no-store' });
@@ -46,9 +81,9 @@ const FrameStore = (() => {
         const serverHash = String(seedText.length) + '_' + seedText.slice(0, 40);
         const lastHash = localStorage.getItem(HASH_KEY);
 
-        if (serverHash !== lastHash) {
-          const serverFrames = JSON.parse(seedText);
-          const rawLocal = localStorage.getItem(STORAGE_KEY);
+        if (serverHash !== lastHash || !localStorage.getItem(STORAGE_KEY)) {
+          const serverFrames = JSON.parse(seedText).map(sanitizeFrame);
+          const rawLocal = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(OLD_STORAGE_KEY);
           let localCustom = [];
           if (rawLocal) {
             try {
@@ -59,7 +94,7 @@ const FrameStore = (() => {
               }
             } catch (err) {}
           }
-          cache = [...serverFrames, ...localCustom];
+          cache = [...serverFrames, ...localCustom].map(sanitizeFrame);
           localStorage.setItem(HASH_KEY, serverHash);
           persist();
           return cache;
@@ -69,20 +104,26 @@ const FrameStore = (() => {
       // offline or fetch failed, fallback to local storage
     }
 
-    const raw = localStorage.getItem(STORAGE_KEY);
+    // 2. Read local storage
+    const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(OLD_STORAGE_KEY);
     if (raw) {
       try {
         cache = JSON.parse(raw);
-        if (Array.isArray(cache) && cache.length > 0) return cache;
+        if (Array.isArray(cache) && cache.length > 0) {
+          cache = cache.map(sanitizeFrame);
+          return cache;
+        }
       } catch (e) {
         console.warn('[FrameStore] Cache corrupt, reloading seed');
       }
     }
 
     try {
-      let res = await fetch(SEED_URL, { cache: 'no-store' });
-      if (!res.ok) res = await fetch(ALT_SEED_URL, { cache: 'no-store' });
-      cache = await res.json();
+      let res = await fetch(SEED_URL + '?v=' + Date.now(), { cache: 'no-store' });
+      if (!res.ok) res = await fetch(ALT_SEED_URL + '?v=' + Date.now(), { cache: 'no-store' });
+      const rawList = await res.json();
+      cache = rawList.map(sanitizeFrame);
+      persist();
     } catch (e) {
       console.warn('[FrameStore] Failed fetching seed, using defaults', e);
       cache = [

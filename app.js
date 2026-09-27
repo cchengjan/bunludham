@@ -368,22 +368,20 @@
       ctx.rect(0, 0, canvas.width, canvas.height);
       ctx.clip();
 
-      // Apply Filter & Color Adjustments
-      ctx.filter = getCanvasFilterString();
+      // Hardware-accelerated ImageFilter engine
+      let sourceToDraw = photoImg;
+      if (window.photoFilter) {
+        const filtered = window.photoFilter.render(adjustments);
+        if (filtered) sourceToDraw = filtered;
+      } else {
+        try {
+          ctx.filter = getCanvasFilterString();
+        } catch (e) {}
+      }
 
       ctx.translate(canvas.width / 2 + offsetX, canvas.height / 2 + offsetY);
       ctx.scale(scale, scale);
-      ctx.drawImage(photoImg, -photoImg.width / 2, -photoImg.height / 2);
-
-      // Warmth Tint Overlay
-      if (adjustments.warmth !== 0) {
-        ctx.save();
-        ctx.globalCompositeOperation = adjustments.warmth > 0 ? 'soft-light' : 'color';
-        const alpha = Math.abs(adjustments.warmth) / 100 * 0.45;
-        ctx.fillStyle = adjustments.warmth > 0 ? `rgba(245, 158, 11, ${alpha})` : `rgba(59, 130, 246, ${alpha})`;
-        ctx.fillRect(-photoImg.width / 2, -photoImg.height / 2, photoImg.width, photoImg.height);
-        ctx.restore();
-      }
+      ctx.drawImage(sourceToDraw, -sourceToDraw.width / 2, -sourceToDraw.height / 2);
 
       ctx.restore();
     }
@@ -452,7 +450,24 @@
     const url = URL.createObjectURL(file);
     const img = new Image();
     img.onload = () => {
-      photoImg = img;
+      // Memory safety optimization for mobile devices (max 2048px)
+      const maxDim = 2048;
+      if (img.width > maxDim || img.height > maxDim) {
+        const ratio = Math.min(maxDim / img.width, maxDim / img.height);
+        const optCanvas = document.createElement('canvas');
+        optCanvas.width = Math.round(img.width * ratio);
+        optCanvas.height = Math.round(img.height * ratio);
+        const optCtx = optCanvas.getContext('2d');
+        optCtx.drawImage(img, 0, 0, optCanvas.width, optCanvas.height);
+        photoImg = optCanvas;
+      } else {
+        photoImg = img;
+      }
+
+      if (window.photoFilter) {
+        window.photoFilter.loadSource(photoImg);
+      }
+
       fitToArea();
       placeholder.style.display = 'none';
       choosePhotoLabel.innerHTML = '<span>🔄</span> เปลี่ยนรูปภาพ';

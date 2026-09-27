@@ -69,6 +69,7 @@
   const saturationVal = document.getElementById('saturationVal');
   const warmthVal = document.getElementById('warmthVal');
   const filterPills = document.querySelectorAll('.filter-pill');
+  const resetAdjustBtn = document.getElementById('resetAdjustBtn');
 
   // Text inputs
   const userCustomText = document.getElementById('userCustomText');
@@ -117,7 +118,28 @@
       }
     }
     if (Array.isArray(list) && list.length > 0) {
-      // Any frame from Admin whose showInUserMode is not explicitly false is included!
+      // Ensure Kathin frames are properly formatted and never use stale/dead blob URLs
+      list = list.map(f => {
+        if (f.id === 'kathin-peacock-blue') {
+          f.filename = 'assets/frames/kathin-peacock-blue.png';
+          f.thumbnail = 'assets/frames/kathin-peacock-blue-thumb.png';
+          f.canvasWidth = 1024;
+          f.canvasHeight = 1024;
+          f.showInUserMode = true;
+        } else if (f.id === 'kathin-peacock-gold') {
+          if (!f.filename || f.filename.startsWith('blob:')) f.filename = 'assets/frames/kathin-peacock-gold.png';
+          if (!f.thumbnail || f.thumbnail.startsWith('blob:')) f.thumbnail = 'assets/frames/kathin-peacock-gold-thumb.png';
+          f.canvasWidth = 1024;
+          f.canvasHeight = 1024;
+          f.showInUserMode = true;
+        } else if (f.id === 'kathin-118') {
+          if (!f.filename || f.filename.startsWith('blob:')) f.filename = 'assets/frames/kathin-118.png';
+          if (!f.thumbnail || f.thumbnail.startsWith('blob:')) f.thumbnail = 'assets/frames/kathin-118-thumb.png';
+          f.showInUserMode = true;
+        }
+        return f;
+      });
+
       const userFrames = list.filter(f => f.showInUserMode !== false);
       if (userFrames.length > 0) {
         return userFrames;
@@ -157,9 +179,10 @@
       card.setAttribute('aria-label', frame.name);
 
       const sub = frame.subtitle || (frame.category === 'กฐิน' ? 'ภาพที่ระลึกกฐินคุณยายฯ' : frame.category);
+      const fallbackSrc = `assets/frames/${frame.id}-thumb.png`;
       card.innerHTML = `
         <div class="kathin-frame-preview-box">
-          <img src="${frame.thumbnail || frame.filename}" alt="${frame.name}" loading="lazy">
+          <img src="${frame.thumbnail || frame.filename}" alt="${frame.name}" loading="lazy" onerror="this.onerror=null; this.src='${fallbackSrc}';">
         </div>
         <div class="kathin-frame-title">${frame.name}</div>
         <div style="font-size:0.8rem; color:#718096; margin-bottom:12px;">${sub}</div>
@@ -184,8 +207,8 @@
     currentFrame = frame;
     activeFrameName.textContent = frame.name;
 
-    canvas.width = frame.canvasWidth;
-    canvas.height = frame.canvasHeight;
+    canvas.width = frame.canvasWidth || 1024;
+    canvas.height = frame.canvasHeight || 1024;
 
     frameReady = false;
     frameImg = new Image();
@@ -193,6 +216,14 @@
       frameReady = true;
       if (photoImg) fitToArea();
       else draw();
+    };
+    frameImg.onerror = () => {
+      console.warn('Frame image failed to load, falling back to asset:', frame.id);
+      const fallback = KATHIN_FRAMES.find(kf => kf.id === frame.id);
+      const safeSrc = fallback ? fallback.filename : `assets/frames/${frame.id}.png`;
+      if (frameImg.src !== safeSrc) {
+        frameImg.src = safeSrc;
+      }
     };
     frameImg.src = frame.filename;
 
@@ -276,22 +307,22 @@
       ctx.rect(0, 0, canvas.width, canvas.height);
       ctx.clip();
 
-      ctx.filter = getCanvasFilterString();
+      // Render filtered photo using hardware-accelerated ImageFilter engine
+      let sourceToDraw = photoImg;
+      if (window.photoFilter) {
+        const filtered = window.photoFilter.render(adjustments);
+        if (filtered) sourceToDraw = filtered;
+      } else {
+        // Fallback filter string if ImageFilter not available
+        try {
+          ctx.filter = getCanvasFilterString();
+        } catch (e) {}
+      }
 
       // Center photo across the full canvas
       ctx.translate(canvas.width / 2 + offsetX, canvas.height / 2 + offsetY);
       ctx.scale(scale, scale);
-      ctx.drawImage(photoImg, -photoImg.width / 2, -photoImg.height / 2);
-
-      // Warmth Tint
-      if (adjustments.warmth !== 0) {
-        ctx.save();
-        ctx.globalCompositeOperation = adjustments.warmth > 0 ? 'soft-light' : 'color';
-        const alpha = Math.abs(adjustments.warmth) / 100 * 0.45;
-        ctx.fillStyle = adjustments.warmth > 0 ? `rgba(245, 158, 11, ${alpha})` : `rgba(59, 130, 246, ${alpha})`;
-        ctx.fillRect(-photoImg.width / 2, -photoImg.height / 2, photoImg.width, photoImg.height);
-        ctx.restore();
-      }
+      ctx.drawImage(sourceToDraw, -sourceToDraw.width / 2, -sourceToDraw.height / 2);
 
       ctx.restore();
     }
@@ -347,11 +378,28 @@
     reader.onload = (e) => {
       const img = new Image();
       img.onload = () => {
-        photoImg = img;
+        // Optimize memory for mobile devices (max 2048px)
+        const maxDim = 2048;
+        if (img.width > maxDim || img.height > maxDim) {
+          const ratio = Math.min(maxDim / img.width, maxDim / img.height);
+          const optCanvas = document.createElement('canvas');
+          optCanvas.width = Math.round(img.width * ratio);
+          optCanvas.height = Math.round(img.height * ratio);
+          const optCtx = optCanvas.getContext('2d');
+          optCtx.drawImage(img, 0, 0, optCanvas.width, optCanvas.height);
+          photoImg = optCanvas;
+        } else {
+          photoImg = img;
+        }
+
+        if (window.photoFilter) {
+          window.photoFilter.loadSource(photoImg);
+        }
+
         canvasOverlayUpload.classList.add('hidden');
         setControlsEnabled(true);
         fitToArea();
-        showToast('อัปโหลดภาพสำเร็จ ปรับตำแหน่งได้ทันที');
+        showToast('อัปโหลดภาพสำเร็จ ปรับแต่งตำแหน่งและสีได้ทันที');
       };
       img.src = e.target.result;
     };
@@ -620,6 +668,31 @@
         draw();
       });
     });
+
+    // Reset Color Adjustments
+    if (resetAdjustBtn) {
+      resetAdjustBtn.addEventListener('click', () => {
+        adjustments.brightness = 0;
+        adjustments.contrast = 0;
+        adjustments.saturation = 0;
+        adjustments.warmth = 0;
+        adjustments.filter = 'normal';
+
+        brightnessInput.value = 0;
+        contrastInput.value = 0;
+        saturationInput.value = 0;
+        warmthInput.value = 0;
+
+        brightnessVal.textContent = '0';
+        contrastVal.textContent = '0';
+        saturationVal.textContent = '0';
+        warmthVal.textContent = '0';
+
+        filterPills.forEach(p => p.classList.toggle('active', p.getAttribute('data-filter') === 'normal'));
+        draw();
+        showToast('คืนค่าสีภาพเดิมเรียบร้อย');
+      });
+    }
 
     // Text inputs
     userCustomText.addEventListener('input', (e) => {
