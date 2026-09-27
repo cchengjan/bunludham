@@ -17,11 +17,13 @@ const FrameStore = (() => {
   const SEED_URL = 'config/frames.json';
   const ALT_SEED_URL = '../config/frames.json';
 
+  const HASH_KEY = 'pfs_frames_seed_hash';
   let cache = null;
 
   function persist() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
+      window.dispatchEvent(new CustomEvent('pfs:frames_updated'));
     } catch (err) {
       console.error('[FrameStore] persist failed:', err);
       throw new Error('พื้นที่จัดเก็บในเบราว์เซอร์เต็ม ลองลดขนาดภาพ');
@@ -34,6 +36,27 @@ const FrameStore = (() => {
 
   async function ensureLoaded() {
     if (cache) return cache;
+
+    // Check if server seed has updated on GitHub (Method B)
+    try {
+      let seedRes = await fetch(SEED_URL + '?v=' + Date.now(), { cache: 'no-store' });
+      if (!seedRes.ok) seedRes = await fetch(ALT_SEED_URL + '?v=' + Date.now(), { cache: 'no-store' });
+      if (seedRes && seedRes.ok) {
+        const seedText = await seedRes.text();
+        const serverHash = String(seedText.length) + '_' + seedText.slice(0, 40);
+        const lastHash = localStorage.getItem(HASH_KEY);
+
+        if (serverHash !== lastHash) {
+          cache = JSON.parse(seedText);
+          localStorage.setItem(HASH_KEY, serverHash);
+          persist();
+          return cache;
+        }
+      }
+    } catch (e) {
+      // offline or fetch failed, fallback to local storage
+    }
+
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       try {
@@ -148,6 +171,10 @@ const FrameStore = (() => {
       await api.save(f);
     },
 
+    invalidateCache() {
+      cache = null;
+    },
+
     genId,
 
     async resetToSeed() {
@@ -168,12 +195,14 @@ const QuoteStore = (() => {
   const STORAGE_KEY = 'pfs_quotes_v2';
   const SEED_URL = 'config/quotes.json';
   const ALT_SEED_URL = '../config/quotes.json';
+  const HASH_KEY = 'pfs_quotes_seed_hash';
 
   let cache = null;
 
   function persist() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cache));
+      window.dispatchEvent(new CustomEvent('pfs:quotes_updated'));
     } catch (err) {
       console.error('[QuoteStore] persist failed:', err);
     }
@@ -185,6 +214,27 @@ const QuoteStore = (() => {
 
   async function ensureLoaded() {
     if (cache) return cache;
+
+    // Check if server seed has updated on GitHub (Method B)
+    try {
+      let seedRes = await fetch(SEED_URL + '?v=' + Date.now(), { cache: 'no-store' });
+      if (!seedRes.ok) seedRes = await fetch(ALT_SEED_URL + '?v=' + Date.now(), { cache: 'no-store' });
+      if (seedRes && seedRes.ok) {
+        const seedText = await seedRes.text();
+        const serverHash = String(seedText.length) + '_' + seedText.slice(0, 40);
+        const lastHash = localStorage.getItem(HASH_KEY);
+
+        if (serverHash !== lastHash) {
+          cache = JSON.parse(seedText);
+          localStorage.setItem(HASH_KEY, serverHash);
+          persist();
+          return cache;
+        }
+      }
+    } catch (e) {
+      // offline or fetch failed
+    }
+
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       try {
@@ -285,6 +335,10 @@ const QuoteStore = (() => {
         persist();
       }
       return q;
+    },
+
+    invalidateCache() {
+      cache = null;
     }
   };
 
@@ -459,3 +513,16 @@ const ActivityStore = (() => {
 
   return api;
 })();
+
+// Cross-tab Synchronization (Realtime Same-Device Sync)
+window.addEventListener('storage', (e) => {
+  if (e.key === 'pfs_frames_v2') {
+    FrameStore.invalidateCache();
+    window.dispatchEvent(new CustomEvent('pfs:frames_updated'));
+  }
+  if (e.key === 'pfs_quotes_v2') {
+    QuoteStore.invalidateCache();
+    window.dispatchEvent(new CustomEvent('pfs:quotes_updated'));
+  }
+});
+

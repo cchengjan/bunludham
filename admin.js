@@ -76,6 +76,8 @@
   const btnImportBackup = document.getElementById('btnImportBackup');
   const importFileInput = document.getElementById('importFileInput');
   const btnResetDefaults = document.getElementById('btnResetDefaults');
+  const btnExportFramesMaster = document.getElementById('btnExportFramesMaster');
+  const btnExportQuotesMaster = document.getElementById('btnExportQuotesMaster');
 
   // PIN Auth
   const pinModal = document.getElementById('pinModal');
@@ -759,6 +761,49 @@
         localStorage.removeItem('pfs_activities_v2');
         showToast('รีเซ็ตระบบเรียบร้อย กำลังโหลดข้อมูลเริ่มต้น...');
         setTimeout(() => window.location.reload(), 1000);
+      }
+    });
+  }
+
+  // Method B Master JSON Export
+  if (btnExportFramesMaster) {
+    btnExportFramesMaster.addEventListener('click', async () => {
+      try {
+        const frames = await FrameStore.getAll();
+        const jsonStr = JSON.stringify(frames, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'frames.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('ดาวน์โหลด frames.json เรียบร้อย นำไปวางในโฟลเดอร์ config/ ได้เลย');
+      } catch (e) {
+        showToast('เกิดข้อผิดพลาด: ' + e.message, true);
+      }
+    });
+  }
+
+  if (btnExportQuotesMaster) {
+    btnExportQuotesMaster.addEventListener('click', async () => {
+      try {
+        const quotes = await QuoteStore.getAll();
+        const jsonStr = JSON.stringify(quotes, null, 2);
+        const blob = new Blob([jsonStr], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'quotes.json';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast('ดาวน์โหลด quotes.json เรียบร้อย นำไปวางในโฟลเดอร์ config/ ได้เลย');
+      } catch (e) {
+        showToast('เกิดข้อผิดพลาด: ' + e.message, true);
       }
     });
   }

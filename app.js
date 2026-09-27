@@ -898,6 +898,25 @@
   }
 
   // ---------------------------------------------------------------
+  // Realtime Sync from Admin Changes
+  // ---------------------------------------------------------------
+  window.addEventListener('pfs:frames_updated', async () => {
+    try {
+      await initPicker();
+    } catch (e) {
+      console.warn('Realtime frames update error:', e);
+    }
+  });
+
+  window.addEventListener('pfs:quotes_updated', async () => {
+    try {
+      await initQuotes();
+    } catch (e) {
+      console.warn('Realtime quotes update error:', e);
+    }
+  });
+
+  // ---------------------------------------------------------------
   // Boot
   // ---------------------------------------------------------------
   async function boot() {

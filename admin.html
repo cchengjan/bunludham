@@ -350,6 +350,28 @@ Photo Frame Studio/
           </button>
         </div>
       </div>
+
+      <!-- Method B: Master Sync for GitHub -->
+      <div style="background:var(--bg-surface); border:2px solid var(--gold-primary); border-radius:var(--radius-md); padding:20px; margin-top:20px; box-shadow:var(--shadow-sm);">
+        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+          <span style="font-size:1.4rem;">🌐</span>
+          <h3 style="color:var(--deep-teal); margin:0; font-size:1.1rem;">
+            อัปเดตข้อมูลขึ้นระบบส่วนกลางให้ทุกคนเห็น (Method B — GitHub Master Sync)
+          </h3>
+        </div>
+        <p style="font-size:0.88rem; color:var(--muted); line-height:1.6; margin-bottom:16px;">
+          เมื่อ Admin แก้ไข/เพิ่มกรอบรูปหรือคำคมในหน้านี้แล้วต้องการให้<strong>ผู้ใช้ทุกคนทั่วโลกเห็นตรงกันแบบถาวร</strong> ให้กดดาวน์โหลดไฟล์ด้านล่าง แล้วนำไปวางทับในโฟลเดอร์ <code>config/</code> แล้ว Push ขึ้น GitHub ได้ทันที!
+        </p>
+
+        <div style="display:flex; gap:12px; flex-wrap:wrap;">
+          <button type="button" class="primary" id="btnExportFramesMaster">
+            📥 ดาวน์โหลด frames.json (สำหรับ config/frames.json)
+          </button>
+          <button type="button" class="primary" id="btnExportQuotesMaster">
+            📥 ดาวน์โหลด quotes.json (สำหรับ config/quotes.json)
+          </button>
+        </div>
+      </div>
     </div>
   </section>
 
