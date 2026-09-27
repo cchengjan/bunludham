@@ -75,6 +75,32 @@ const FrameStore = (() => {
       console.warn('[FrameStore] Failed fetching seed, using defaults', e);
       cache = [
         {
+          id: "kathin-peacock-gold",
+          name: "กฐิน ๑๑๘ ปี นกยูงทองคำ",
+          category: "กฐิน",
+          keywords: ["กฐิน", "๑๑๘ ปี", "นกยูงทองคำ", "คุณยายอาจารย์", "ริบบิ้นน้ำเงิน"],
+          filename: "assets/frames/kathin-peacock-gold.png",
+          thumbnail: "assets/frames/kathin-peacock-gold-thumb.png",
+          canvasWidth: 1024,
+          canvasHeight: 1024,
+          photoArea: { x: 0, y: 0, width: 1024, height: 1024, borderRadius: 0 },
+          status: "ACTIVE",
+          sortOrder: 1
+        },
+        {
+          id: "kathin-peacock-blue",
+          name: "กฐิน ๑๑๘ ปี นกยูงคู่แก้ว",
+          category: "กฐิน",
+          keywords: ["กฐิน", "๑๑๘ ปี", "นกยูงคู่", "ดอกบัว", "คุณยายอาจารย์"],
+          filename: "assets/frames/kathin-peacock-blue.png",
+          thumbnail: "assets/frames/kathin-peacock-blue-thumb.png",
+          canvasWidth: 1024,
+          canvasHeight: 1024,
+          photoArea: { x: 0, y: 0, width: 1024, height: 1024, borderRadius: 0 },
+          status: "ACTIVE",
+          sortOrder: 2
+        },
+        {
           id: "kathin-118",
           name: "กฐิน ๑๑๘ ปี คุณยายอาจารย์",
           category: "กฐิน",
@@ -83,9 +109,9 @@ const FrameStore = (() => {
           thumbnail: "assets/frames/kathin-118-thumb.png",
           canvasWidth: 2351,
           canvasHeight: 2351,
-          photoArea: { x: 440, y: 260, width: 1470, height: 1200, borderRadius: 160 },
+          photoArea: { x: 0, y: 0, width: 2351, height: 2351, borderRadius: 0 },
           status: "ACTIVE",
-          sortOrder: 1
+          sortOrder: 3
         }
       ];
     }

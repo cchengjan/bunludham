@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>กฐินคุณยายฯ — สร้างภาพที่ระลึกมหากุศล (กฐิน ๑๑๘ ปี)</title>
+  <meta name="description" content="สร้างภาพที่ระลึกมหากุศล กฐิน ๑๑๘ ปี คุณยายอาจารย์มหารัตนอุบาสิกา จันทร์ ขนนกยูง สวยงาม คมชัด ใช้งานได้ทันที">
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    /* Dedicated Standalone User Studio Styles */
+    .user-header {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.25);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(12, 74, 69, 0.05);
+    }
+    .user-header-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 12px 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .user-brand-center {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+    }
+    .kathin-intro-banner {
+      max-width: 760px;
+      margin: 20px auto 10px;
+      padding: 16px 20px;
+      background: linear-gradient(135deg, rgba(12, 74, 69, 0.04) 0%, rgba(212, 175, 55, 0.08) 100%);
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      text-align: center;
+    }
+    .kathin-intro-banner h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--deep-teal);
+      margin: 0 0 4px;
+    }
+    .kathin-intro-banner p {
+      font-size: 0.88rem;
+      color: var(--charcoal-soft);
+      margin: 0;
+    }
+    .kathin-3frames-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 860px;
+      margin: 24px auto 30px;
+      padding: 0 16px;
+    }
+    .kathin-frame-card {
+      background: #FFFFFF;
+      border: 2px solid #E8E3DC;
+      border-radius: var(--radius-md);
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 4px 16px rgba(12, 74, 69, 0.05);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+    }
+    .kathin-frame-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--gold);
+      box-shadow: 0 12px 28px rgba(212, 175, 55, 0.25);
+    }
+    .kathin-frame-card.selected {
+      border-color: var(--deep-teal);
+      outline: 3px solid rgba(12, 74, 69, 0.2);
+      box-shadow: 0 8px 24px rgba(12, 74, 69, 0.15);
+    }
+    .kathin-frame-preview-box {
+      width: 100%;
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle, #FAF8F5 0%, #F0ECE4 100%);
+      border-radius: var(--radius-sm);
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+    .kathin-frame-preview-box img {
+      max-width: 90%;
+      max-height: 90%;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.12));
+    }
+    .kathin-frame-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--deep-teal);
+      margin-bottom: 6px;
+    }
+    .kathin-frame-btn {
+      margin-top: auto;
+      width: 100%;
+      padding: 8px 12px;
+      background: linear-gradient(135deg, var(--deep-teal) 0%, #0F5E57 100%);
+      color: #FFFFFF;
+      border: none;
+      border-radius: var(--radius-sm);
+      font-weight: 600;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+    .kathin-frame-btn:hover {
+      background: var(--gold);
+      color: #181F26;
+    }
+    .privacy-notice-box {
+      text-align: center;
+      font-size: 0.8rem;
+      color: #718096;
+      margin: 18px 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+    @media (max-width: 768px) {
+      .kathin-3frames-grid {
+        grid-template-columns: 1fr;
+        max-width: 380px;
+        gap: 16px;
+      }
+      .kathin-intro-banner {
+        margin: 14px 16px 6px;
+        padding: 12px 14px;
+      }
+      .kathin-intro-banner h1 {
+        font-size: 1.15rem;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ================= Clean User Header (No Admin / No Community Links) ================= -->
+  <header class="user-header">
+    <div class="user-header-inner">
+      <div class="user-brand-center">
+        <div class="brand-icon">
+          <img src="assets/lotus-icon.png" alt="กฐินคุณยายฯ" class="brand-icon-img">
+        </div>
+        <div class="brand-titles" style="text-align:left;">
+          <div class="brand-name">
+            <span class="brand-title-gold">กฐินคุณยายฯ</span>
+            <span class="badge-gold">๑๑๘ ปี</span>
+          </div>
+          <span class="brand-tagline">ทำให้ดีกว่าดีที่สุด • สตูดิโอสร้างภาพที่ระลึก</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ================= Screen 1: เลือก 1 ใน 3 กรอบกฐิน ================= -->
+  <main class="main-wrapper" style="max-width:960px; padding:16px 12px 60px;">
+
+    <section id="screen-picker" class="gallery-section">
+      <div class="kathin-intro-banner">
+        <h1>🪷 สร้างภาพที่ระลึกมหากุศล กฐิน ๑๑๘ ปี</h1>
+        <p>เลือกแบบกรอบภาพอันทรงคุณค่า อัปโหลดภาพของคุณ และดาวน์โหลดเก็บไว้เป็นที่ระลึกได้ทันที</p>
+      </div>
+
+      <div class="kathin-3frames-grid" id="threeFramesContainer">
+        <!-- 3 Kathin Frames Rendered Dynamically -->
+      </div>
+
+      <div class="privacy-notice-box">
+        <span>🔒</span> ภาพประมวลผลบนมือถือ/อุปกรณ์ของคุณโดยตรง ไม่มีการบันทึกหรือส่งขึ้นเซิร์ฟเวอร์
+      </div>
+    </section>
+
+    <!-- ================= Screen 2: สตูดิโอแต่งภาพ & ดาวน์โหลด ================= -->
+    <section id="screen-editor" class="editor-section hidden">
+
+      <div class="editor-top-bar">
+        <button type="button" id="backToPickerBtn" class="back-btn">
+          <span>←</span> เลือกกรอบอื่น
+        </button>
+        <div class="editor-frame-info">
+          <span class="frame-tag-label">กรอบที่เลือก:</span>
+          <span id="activeFrameName" class="frame-name-display">—</span>
+        </div>
+      </div>
+
+      <div class="canvas-wrapper">
+        <div class="canvas-container" id="canvasBox">
+          <canvas id="photoCanvas" width="1024" height="1024"></canvas>
+          <div id="canvasOverlayUpload" class="canvas-upload-overlay">
+            <span class="upload-icon-big">📸</span>
+            <span class="upload-title">แตะที่นี่เพื่อเลือกรูปภาพ</span>
+            <span class="upload-subtitle">รองรับไฟล์ JPG, PNG หรือถ่ายจากกล้องมือถือ</span>
+          </div>
+        </div>
+      </div>
+
+      <input type="file" id="userPhotoInput" accept="image/*" class="hidden">
+
+      <div class="editor-controls-card">
+        <div class="luxury-tabs">
+          <button type="button" class="tab-btn active" data-tab="tab-transform">
+            <span>🔍</span> ซูม & ปรับภาพ
+          </button>
+          <button type="button" class="tab-btn" data-tab="tab-adjust">
+            <span>🎨</span> สี & ฟิลเตอร์
+          </button>
+          <button type="button" class="tab-btn" data-tab="tab-text">
+            <span>✍️</span> ข้อความมงคล
+          </button>
+        </div>
+
+        <!-- Tab 1: Transform & Zoom -->
+        <div class="tab-panel" id="tab-transform">
+          <div class="transform-actions-row">
+            <button type="button" id="reselectPhotoBtn" class="secondary-btn">
+              <span>🖼️</span> เปลี่ยนรูปภาพ
+            </button>
+            <button type="button" id="fitAreaBtn" class="secondary-btn" disabled>
+              <span>↔</span> จัดพอดีเฟรม
+            </button>
+            <button type="button" id="resetTransformBtn" class="secondary-btn" disabled>
+              <span>↺</span> รีเซ็ตตำแหน่ง
+            </button>
+          </div>
+
+          <div class="zoom-slider-container">
+            <span class="zoom-label">ขนาดรูปภาพ</span>
+            <button type="button" id="zoomOutBtn" class="zoom-ctrl-btn" disabled aria-label="ซูมออก">−</button>
+            <input type="range" id="zoomRange" class="luxury-range" min="100" max="400" value="100" disabled>
+            <button type="button" id="zoomInBtn" class="zoom-ctrl-btn" disabled aria-label="ซูมเข้า">+</button>
+            <span id="zoomPercentVal" class="zoom-value-text">100%</span>
+          </div>
+          <p class="hint-text" style="text-align:center; margin-top:8px;">
+            💡 สามารถแตะแล้วลากเพื่อเลื่อนตำแหน่งภาพ หรือใช้ 2 นิ้วบีบ/ขยายบนหน้าจอได้
+          </p>
+        </div>
+
+        <!-- Tab 2: Adjustments & Filters -->
+        <div class="tab-panel hidden" id="tab-adjust">
+          <div class="preset-filters-row">
+            <button type="button" class="filter-pill active" data-filter="normal">ธรรมชาติ</button>
+            <button type="button" class="filter-pill" data-filter="warm">อบอุ่น</button>
+            <button type="button" class="filter-pill" data-filter="soft">ละมุน</button>
+            <button type="button" class="filter-pill" data-filter="classic">คลาสสิก</button>
+            <button type="button" class="filter-pill" data-filter="bw">ขาวดำ</button>
+          </div>
+
+          <div class="sliders-grid">
+            <div class="slider-item">
+              <div class="slider-label-row">
+                <span>ความสว่าง (Brightness)</span>
+                <span id="brightnessVal" class="slider-val">0</span>
+              </div>
+              <input type="range" id="brightnessInput" class="luxury-range" min="-50" max="50" value="0">
+            </div>
+            <div class="slider-item">
+              <div class="slider-label-row">
+                <span>ความคมชัด (Contrast)</span>
+                <span id="contrastVal" class="slider-val">0</span>
+              </div>
+              <input type="range" id="contrastInput" class="luxury-range" min="-50" max="50" value="0">
+            </div>
+            <div class="slider-item">
+              <div class="slider-label-row">
+                <span>ความสดของสี (Saturation)</span>
+                <span id="saturationVal" class="slider-val">0</span>
+              </div>
+              <input type="range" id="saturationInput" class="luxury-range" min="-50" max="50" value="0">
+            </div>
+            <div class="slider-item">
+              <div class="slider-label-row">
+                <span>อุณหภูมิสี (Warmth)</span>
+                <span id="warmthVal" class="slider-val">0</span>
+              </div>
+              <input type="range" id="warmthInput" class="luxury-range" min="-50" max="50" value="0">
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 3: Text & Quote Panel -->
+        <div class="tab-panel hidden" id="tab-text">
+          <div class="quote-picker-wrap">
+            <div class="user-custom-input-box">
+              <label style="font-size:0.85rem; font-weight:600; color:var(--deep-teal);">
+                ✍️ พิมพ์ชื่อ หรือข้อความของคุณ
+              </label>
+              <input type="text" id="userCustomText" class="custom-text-input" placeholder="เช่น ขออนุโมทนาบุญกับทุกท่าน, หรือชื่อของคุณ..." maxlength="60">
+            </div>
+
+            <div style="font-size:0.85rem; font-weight:600; color:var(--deep-teal); margin-top:12px;">
+              🪷 หรือแตะเลือกข้อความมงคล
+            </div>
+            <div class="quick-quotes-list" id="quickQuotesList">
+              <button type="button" class="quote-chip" data-quote="ทำให้ดีกว่าดีที่สุด">✨ ทำให้ดีกว่าดีที่สุด</button>
+              <button type="button" class="quote-chip" data-quote="จิตที่ผ่องใส ย่อมนำความสุขมาให้">🪷 จิตที่ผ่องใส ย่อมนำความสุขมาให้</button>
+              <button type="button" class="quote-chip" data-quote="บุญคือเบื้องหลังของความสุขและความสำเร็จ">🌟 บุญคือเบื้องหลังของความสุขและความสำเร็จ</button>
+              <button type="button" class="quote-chip" data-quote="กฐิน ๑๑๘ ปี คุณยายอาจารย์">👑 กฐิน ๑๑๘ ปี คุณยายอาจารย์</button>
+              <button type="button" class="quote-chip" data-quote="มหากุศลยิ่งใหญ่ ใจใสสว่าง">💫 มหากุศลยิ่งใหญ่ ใจใสสว่าง</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Primary Action Button -->
+        <div class="editor-export-actions" style="margin-top:20px;">
+          <button type="button" id="createImageBtn" class="btn-primary-action" disabled>
+            <span>✨</span> บันทึกและดาวน์โหลดภาพที่ระลึก
+          </button>
+          <div class="privacy-notice-box" style="margin-top:10px;">
+            <span>🔒</span> ภาพบันทึกลงในเครื่องของคุณโดยตรง ไม่มีการส่งข้อมูลใด ๆ ออกนอกอุปกรณ์
+          </div>
+        </div>
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- ================= Direct Download Modal (No Community, No Admin) ================= -->
+  <div class="modal-overlay" id="downloadModal">
+    <div class="celebration-card" style="max-width:440px;">
+      <div class="celebration-badge">🪷</div>
+      <h3 class="celebration-title">ภาพที่ระลึกของคุณพร้อมแล้ว</h3>
+      <p class="celebration-desc">ภาพมหากุศลคมชัดระดับสูง สามารถกดบันทึกลงเครื่องหรือแชร์ได้ทันที</p>
+      
+      <img id="downloadPreview" class="celebration-preview-img" alt="ภาพที่ระลึก">
+
+      <div class="celebration-options">
+        <a id="directDownloadLink" class="btn-submit-community" style="text-decoration:none; justify-content:center;" download="kathin118_photo.png">
+          <span>⬇️</span> ดาวน์โหลดภาพ PNG
+        </a>
+        <button type="button" id="closeDownloadModalBtn" class="ghost-btn" style="margin-top:4px;">
+          สร้างภาพใหม่อีกครั้ง
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast-msg"></div>
+
+  <!-- Scripts -->
+  <script src="create.js"></script>
+</body>
+</html>

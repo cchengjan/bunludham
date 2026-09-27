@@ -293,7 +293,14 @@
   });
 
   function area() {
-    return currentFrame.photoArea;
+    // ให้ทุกกรอบวางภาพได้เต็มเฟรม (Full-frame canvas)
+    return {
+      x: 0,
+      y: 0,
+      width: canvas.width || (currentFrame && currentFrame.canvasWidth) || 1024,
+      height: canvas.height || (currentFrame && currentFrame.canvasHeight) || 1024,
+      borderRadius: 0
+    };
   }
 
   function coverScaleFor(img) {
@@ -357,13 +364,14 @@
     if (photoImg && currentFrame) {
       const a = area();
       ctx.save();
-      roundRectPath(ctx, a.x, a.y, a.width, a.height, a.borderRadius || 0);
+      ctx.beginPath();
+      ctx.rect(0, 0, canvas.width, canvas.height);
       ctx.clip();
 
       // Apply Filter & Color Adjustments
       ctx.filter = getCanvasFilterString();
 
-      ctx.translate(a.x + a.width / 2 + offsetX, a.y + a.height / 2 + offsetY);
+      ctx.translate(canvas.width / 2 + offsetX, canvas.height / 2 + offsetY);
       ctx.scale(scale, scale);
       ctx.drawImage(photoImg, -photoImg.width / 2, -photoImg.height / 2);
 
@@ -395,30 +403,29 @@
   }
 
   function drawTextOverlay(text) {
-    const a = area();
     ctx.save();
     
     // Bottom banner inside photo area
-    const bannerH = Math.max(50, Math.round(canvas.height * 0.05));
-    const bannerY = a.y + a.height - bannerH - 12;
-    const bannerX = a.x + 20;
-    const bannerW = a.width - 40;
+    const bannerH = Math.max(50, Math.round(canvas.height * 0.055));
+    const bannerY = canvas.height - bannerH - Math.round(canvas.height * 0.045);
+    const bannerW = Math.round(canvas.width * 0.82);
+    const bannerX = (canvas.width - bannerW) / 2;
 
     // Glassmorphism pill
     roundRectPath(ctx, bannerX, bannerY, bannerW, bannerH, bannerH / 2);
-    ctx.fillStyle = 'rgba(12, 74, 69, 0.78)';
+    ctx.fillStyle = 'rgba(12, 74, 69, 0.82)';
     ctx.fill();
-    ctx.lineWidth = Math.max(2, Math.round(canvas.width * 0.0015));
-    ctx.strokeStyle = 'rgba(212, 175, 55, 0.65)';
+    ctx.lineWidth = Math.max(2, Math.round(canvas.width * 0.0018));
+    ctx.strokeStyle = 'rgba(212, 175, 55, 0.7)';
     ctx.stroke();
 
     // Text styling
-    const fontSize = Math.max(20, Math.round(canvas.width * 0.022));
-    ctx.font = `500 ${fontSize}px "Noto Sans Thai", "Sarabun", sans-serif`;
+    const fontSize = Math.max(20, Math.round(canvas.width * 0.023));
+    ctx.font = `600 ${fontSize}px "Noto Sans Thai", "Sarabun", sans-serif`;
     ctx.fillStyle = '#FFFFFF';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(text, bannerX + bannerW / 2, bannerY + bannerH / 2 + 1, bannerW - 20);
+    ctx.fillText(text, bannerX + bannerW / 2, bannerY + bannerH / 2 + 1, bannerW - 24);
 
     ctx.restore();
   }

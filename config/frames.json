@@ -1,5 +1,31 @@
 [
   {
+    "id": "kathin-peacock-gold",
+    "name": "กฐิน ๑๑๘ ปี นกยูงทองคำ",
+    "category": "กฐิน",
+    "keywords": ["กฐิน", "๑๑๘ ปี", "นกยูงทองคำ", "คุณยายอาจารย์", "ริบบิ้นน้ำเงิน"],
+    "filename": "assets/frames/kathin-peacock-gold.png",
+    "thumbnail": "assets/frames/kathin-peacock-gold-thumb.png",
+    "canvasWidth": 1024,
+    "canvasHeight": 1024,
+    "photoArea": { "x": 0, "y": 0, "width": 1024, "height": 1024, "borderRadius": 0 },
+    "status": "ACTIVE",
+    "sortOrder": 1
+  },
+  {
+    "id": "kathin-peacock-blue",
+    "name": "กฐิน ๑๑๘ ปี นกยูงคู่แก้ว",
+    "category": "กฐิน",
+    "keywords": ["กฐิน", "๑๑๘ ปี", "นกยูงคู่", "ดอกบัว", "คุณยายอาจารย์"],
+    "filename": "assets/frames/kathin-peacock-blue.png",
+    "thumbnail": "assets/frames/kathin-peacock-blue-thumb.png",
+    "canvasWidth": 1024,
+    "canvasHeight": 1024,
+    "photoArea": { "x": 0, "y": 0, "width": 1024, "height": 1024, "borderRadius": 0 },
+    "status": "ACTIVE",
+    "sortOrder": 2
+  },
+  {
     "id": "kathin-118",
     "name": "กฐิน ๑๑๘ ปี คุณยายอาจารย์",
     "category": "กฐิน",
@@ -8,9 +34,9 @@
     "thumbnail": "assets/frames/kathin-118-thumb.png",
     "canvasWidth": 2351,
     "canvasHeight": 2351,
-    "photoArea": { "x": 440, "y": 260, "width": 1470, "height": 1200, "borderRadius": 160 },
+    "photoArea": { "x": 0, "y": 0, "width": 2351, "height": 2351, "borderRadius": 0 },
     "status": "ACTIVE",
-    "sortOrder": 1
+    "sortOrder": 3
   },
   {
     "id": "muthita",
@@ -21,9 +47,9 @@
     "thumbnail": "assets/frames/muthita-thumb.png",
     "canvasWidth": 1600,
     "canvasHeight": 1600,
-    "photoArea": { "x": 200, "y": 220, "width": 1200, "height": 1040, "borderRadius": 80 },
+    "photoArea": { "x": 0, "y": 0, "width": 1600, "height": 1600, "borderRadius": 0 },
     "status": "ACTIVE",
-    "sortOrder": 2
+    "sortOrder": 4
   },
   {
     "id": "boon-anamai",
@@ -34,9 +60,9 @@
     "thumbnail": "assets/frames/boon-anamai-thumb.png",
     "canvasWidth": 1600,
     "canvasHeight": 1600,
-    "photoArea": { "x": 200, "y": 180, "width": 1200, "height": 1080, "borderRadius": 120 },
+    "photoArea": { "x": 0, "y": 0, "width": 1600, "height": 1600, "borderRadius": 0 },
     "status": "ACTIVE",
-    "sortOrder": 3
+    "sortOrder": 5
   },
   {
     "id": "piti-charoen",
@@ -47,9 +73,9 @@
     "thumbnail": "assets/frames/piti-charoen-thumb.png",
     "canvasWidth": 1600,
     "canvasHeight": 1600,
-    "photoArea": { "x": 220, "y": 240, "width": 1160, "height": 1000, "borderRadius": 100 },
+    "photoArea": { "x": 0, "y": 0, "width": 1600, "height": 1600, "borderRadius": 0 },
     "status": "ACTIVE",
-    "sortOrder": 4
+    "sortOrder": 6
   },
   {
     "id": "suan-mon",
@@ -60,8 +86,8 @@
     "thumbnail": "assets/frames/suan-mon-thumb.png",
     "canvasWidth": 1600,
     "canvasHeight": 1600,
-    "photoArea": { "x": 200, "y": 200, "width": 1200, "height": 1050, "borderRadius": 160 },
+    "photoArea": { "x": 0, "y": 0, "width": 1600, "height": 1600, "borderRadius": 0 },
     "status": "ACTIVE",
-    "sortOrder": 5
+    "sortOrder": 7
   }
 ]
