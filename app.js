@@ -716,7 +716,7 @@
       dataUrl: lastExportDataUrl,
       thumbnail: thumbDataUrl,
       caption,
-      eventName: currentFrame ? currentFrame.name : 'ภาพกิจกรรมมหากุศล',
+      eventName: currentFrame ? currentFrame.name : 'กฐินคุณยายฯ',
       quoteText: overlayText || selectedAdminQuote
     });
 

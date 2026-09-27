@@ -417,7 +417,7 @@ const ActivityStore = (() => {
         thumbnail: thumbnail || dataUrl,
         caption: caption || '',
         quoteText: quoteText || '',
-        eventName: eventName || 'ภาพกิจกรรมมหากุศล',
+        eventName: eventName || 'กฐินคุณยายฯ',
         dateStr: formatThaiDate(now),
         timestamp: now.getTime(),
         reactions: {

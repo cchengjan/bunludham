@@ -120,17 +120,29 @@ body {
 }
 
 .brand-icon {
-  width: 40px;
-  height: 40px;
+  width: 42px;
+  height: 42px;
   border-radius: var(--radius-sm);
-  background: linear-gradient(135deg, var(--deep-teal) 0%, var(--emerald) 100%);
+  background: linear-gradient(135deg, var(--deep-teal) 0%, #0F5E57 60%, var(--emerald) 100%);
   display: flex;
   align-items: center;
   justify-content: center;
   color: #FFFFFF;
   box-shadow: 0 4px 12px rgba(12, 74, 69, 0.25);
-  border: 1px solid rgba(255, 255, 255, 0.18);
-  font-size: 20px;
+  border: 1px solid rgba(212, 175, 55, 0.35);
+  flex-shrink: 0;
+}
+
+.brand-icon-img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.25));
+  transition: transform 0.25s ease;
+}
+
+.brand-wrap:hover .brand-icon-img {
+  transform: scale(1.1) rotate(3deg);
 }
 
 .brand-titles {
@@ -139,13 +151,25 @@ body {
 }
 
 .brand-name {
-  font-size: 1.15rem;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  font-size: 1.25rem;
+  font-weight: 800;
+  letter-spacing: -0.015em;
   color: var(--deep-teal);
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 7px;
+  line-height: 1.2;
+}
+
+.brand-title-gold {
+  font-family: var(--font-family);
+  font-weight: 800;
+  background: linear-gradient(135deg, #B45309 0%, #D4AF37 35%, #F59E0B 65%, #0C4A45 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  filter: drop-shadow(0 1px 1px rgba(180, 83, 9, 0.2));
+  letter-spacing: -0.015em;
+  display: inline-block;
 }
 
 .brand-name span.badge-gold {
@@ -1390,6 +1414,42 @@ input[type="range"].luxury-range::-webkit-slider-thumb:active {
 
 /* Mobile Optimizations */
 @media (max-width: 640px) {
+  .header-inner {
+    padding: 10px 14px;
+  }
+  .brand-wrap {
+    gap: 8px;
+  }
+  .brand-icon {
+    width: 36px;
+    height: 36px;
+  }
+  .brand-icon-img {
+    width: 24px;
+    height: 24px;
+  }
+  .brand-name {
+    font-size: 1.1rem;
+    gap: 5px;
+  }
+  .brand-name span.badge-gold {
+    font-size: 0.6rem;
+    padding: 1px 5px;
+  }
+  .brand-tagline {
+    font-size: 0.65rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 170px;
+  }
+  .header-actions {
+    gap: 6px;
+  }
+  .nav-link {
+    padding: 6px 10px;
+    font-size: 0.8rem;
+  }
   .hero-card {
     padding: 24px 20px;
   }
