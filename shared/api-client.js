@@ -16,9 +16,18 @@
     const fetchFn = options.fetchImpl || (typeof fetch === 'function' ? fetch.bind(globalScope) : null);
 
     function getBaseUrl() {
-      const explicit = options.baseUrl !== undefined
-        ? options.baseUrl
-        : (globalScope.PFS_CONFIG && globalScope.PFS_CONFIG.apiBaseUrl) || '';
+      let explicit = '';
+      if (options.baseUrl !== undefined) {
+        explicit = options.baseUrl;
+      } else if (globalScope.PFS_CONFIG && globalScope.PFS_CONFIG.apiBaseUrl !== undefined) {
+        explicit = globalScope.PFS_CONFIG.apiBaseUrl;
+      } else if (
+        globalScope.location &&
+        globalScope.location.hostname === 'cchengjan.github.io'
+      ) {
+        // Fallback if browser cached a legacy pre-v3.1 config.js
+        explicit = 'https://bunludham-membership-api.cchengjan63-a3b.workers.dev';
+      }
       return String(explicit || '').trim().replace(/\/+$/, '').replace(/\/api\/v1$/, '');
     }
 
