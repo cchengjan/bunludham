@@ -22,13 +22,14 @@
       box-shadow: 0 4px 20px rgba(12, 74, 69, 0.05);
     }
     .user-header-inner {
-      max-width: 900px;
+      max-width: 960px;
       margin: 0 auto;
       padding: 12px 18px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      text-align: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
     }
     .user-brand-center {
       display: flex;
@@ -301,6 +302,7 @@
           <span class="brand-tagline">ทำให้ดีกว่าดีที่สุด • สตูดิโอสร้างภาพที่ระลึก</span>
         </div>
       </div>
+      <div id="memberAuthSlot" class="member-auth-slot"></div>
     </div>
   </header>
 
@@ -502,6 +504,9 @@
   <!-- Scripts -->
   <script src="shared/storage.js"></script>
   <script src="shared/image-filter.js"></script>
+  <script src="config.js"></script>
+  <script src="shared/api-client.js"></script>
+  <script src="shared/member-auth.js"></script>
   <script src="create.js"></script>
 </body>
 </html>

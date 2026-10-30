@@ -938,6 +938,15 @@
     }
   });
 
+  window.addEventListener('pfs:activities_updated', async () => {
+    try {
+      await updateStats();
+      await renderActivityWall();
+    } catch (e) {
+      console.warn('Realtime activities update error:', e);
+    }
+  });
+
   // ---------------------------------------------------------------
   // Boot
   // ---------------------------------------------------------------

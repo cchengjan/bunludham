@@ -173,6 +173,123 @@
         await FrameStore.remove(copy.id);
         const removed = !(await FrameStore.getAll()).some(f => f.id === copy.id);
         return hasCopy && removed;
+      }},
+      { name: '11. Storage v3: อพยพข้อมูล pfs_frames_v2 -> pfs_frames_v3 และสำรอง pfs_frames_v2_backup อัตโนมัติ', test: async () => {
+        const savedV3 = localStorage.getItem('pfs_frames_v3');
+        const savedV2 = localStorage.getItem('pfs_frames_v2');
+        const savedBackup = localStorage.getItem('pfs_frames_v2_backup');
+        try {
+          localStorage.removeItem('pfs_frames_v3');
+          localStorage.removeItem('pfs_frames_v2_backup');
+          const legacyFrames = [{
+            id: 'legacy-v2-frame',
+            name: 'กรอบเดิม v2',
+            category: 'กฐิน',
+            filename: 'assets/frames/kathin-118.png',
+            status: 'ACTIVE',
+            photoArea: { x: 0, y: 0, width: 1024, height: 1024, borderRadius: 0 }
+          }];
+          const rawV2 = JSON.stringify(legacyFrames);
+          localStorage.setItem('pfs_frames_v2', rawV2);
+          FrameStore.invalidateCache();
+
+          const mig = FrameStore.migrateFromV2();
+          const all = await FrameStore.getAll();
+          const v2StillPresent = localStorage.getItem('pfs_frames_v2') === rawV2;
+          const backupCreated = localStorage.getItem('pfs_frames_v2_backup') === rawV2;
+          const v3HasLegacy = all.some(f => f.id === 'legacy-v2-frame');
+          return mig.migrated === true && v2StillPresent && backupCreated && v3HasLegacy;
+        } finally {
+          if (savedV3 !== null) localStorage.setItem('pfs_frames_v3', savedV3); else localStorage.removeItem('pfs_frames_v3');
+          if (savedV2 !== null) localStorage.setItem('pfs_frames_v2', savedV2); else localStorage.removeItem('pfs_frames_v2');
+          if (savedBackup !== null) localStorage.setItem('pfs_frames_v2_backup', savedBackup); else localStorage.removeItem('pfs_frames_v2_backup');
+          FrameStore.invalidateCache();
+        }
+      }},
+      { name: '12. Storage v3: ข้อมูล pfs_frames_v3 ที่ถูกต้องไม่ถูกเขียนทับด้วย pfs_frames_v2', test: async () => {
+        const savedV3 = localStorage.getItem('pfs_frames_v3');
+        const savedV2 = localStorage.getItem('pfs_frames_v2');
+        try {
+          await FrameStore.resetToSeed();
+          localStorage.setItem('pfs_frames_v2', JSON.stringify([{
+            id: 'stale-v2-only',
+            name: 'Stale v2',
+            category: 'กฐิน',
+            filename: 'assets/frames/kathin-118.png'
+          }]));
+          const mig = FrameStore.migrateFromV2();
+          const all = await FrameStore.getAll();
+          return mig.migrated === false && mig.status === 'preserved_v3' && !all.some(f => f.id === 'stale-v2-only');
+        } finally {
+          if (savedV3 !== null) localStorage.setItem('pfs_frames_v3', savedV3);
+          if (savedV2 !== null) localStorage.setItem('pfs_frames_v2', savedV2); else localStorage.removeItem('pfs_frames_v2');
+          FrameStore.invalidateCache();
+        }
+      }},
+      { name: '13. Cross-Tab Sync: รับฟัง pfs_frames_v3 และเมินเฉยต่อคีย์อื่นที่ไม่เกี่ยวข้อง / ป้องกันการผูกซ้ำ', test: async () => {
+        let frameEvents = 0;
+        const onFrames = () => { frameEvents++; };
+        window.addEventListener('pfs:frames_updated', onFrames);
+        try {
+          const secondBind = window.bindCrossTabSync();
+          window.dispatchEvent(new StorageEvent('storage', { key: 'unrelated_app_key', newValue: '123' }));
+          const unrelatedIgnored = frameEvents === 0;
+          window.dispatchEvent(new StorageEvent('storage', { key: 'pfs_frames_v2', newValue: '[]' }));
+          const v2IgnoredWhenV3Valid = frameEvents === 0;
+          window.dispatchEvent(new StorageEvent('storage', { key: 'pfs_frames_v3', newValue: localStorage.getItem('pfs_frames_v3') }));
+          return secondBind === false && unrelatedIgnored && v2IgnoredWhenV3Valid && frameEvents === 1;
+        } finally {
+          window.removeEventListener('pfs:frames_updated', onFrames);
+        }
+      }},
+      { name: '14. Backup & Restore v3: Export ข้อมูล v3.0 และกู้คืนทั้งไฟล์ v3.0 และ Legacy v2.0 ได้ถูกต้อง', test: async () => {
+        const exported = await StorageBackup.exportBackup();
+        if (exported.version !== '3.0' || !Array.isArray(exported.frames)) return false;
+
+        const legacyBackup = {
+          version: '2.0',
+          frames: exported.frames.map((f, idx) => idx === 0 ? { ...f, name: 'ชื่อกรอบทดสอบกู้คืน' } : f),
+          quotes: exported.quotes,
+          activities: exported.activities
+        };
+        await StorageBackup.restoreBackup(JSON.stringify(legacyBackup));
+        FrameStore.invalidateCache();
+        const reloaded = await FrameStore.getAll();
+        const restoredOk = reloaded[0].name === 'ชื่อกรอบทดสอบกู้คืน';
+
+        // Restore original v3 backup back
+        await StorageBackup.restoreBackup(JSON.stringify(exported));
+        return restoredOk;
+      }},
+      { name: '15. Backup Validation & Atomic Rollback: ปฏิเสธไฟล์เสียโดยไม่ทำลายข้อมูลเดิม', test: async () => {
+        const beforeFrames = await FrameStore.getAll();
+        let rejected = false;
+        try {
+          await StorageBackup.restoreBackup('{"version":"3.0","frames":[{"invalid":true}]}');
+        } catch (err) {
+          rejected = true;
+        }
+        const afterFrames = await FrameStore.getAll();
+        return rejected && JSON.stringify(beforeFrames) === JSON.stringify(afterFrames);
+      }},
+      { name: '16. Reset Defaults: รีเซ็ต pfs_frames_v3 กลับค่าเริ่มต้น คงคีย์อื่นไว้ และคงสภาพหลังโหลดซ้ำ', test: async () => {
+        localStorage.setItem('pfs_custom_unrelated_test_key', 'keep_me');
+        try {
+          await FrameStore.duplicate('kathin-118');
+          await StorageBackup.resetAllDefaults();
+          FrameStore.invalidateCache();
+          QuoteStore.invalidateCache();
+          ActivityStore.invalidateCache();
+          const framesAfterReload = await FrameStore.getAll();
+          const activitiesAfterReload = await ActivityStore.getAll();
+          const unrelatedKept = localStorage.getItem('pfs_custom_unrelated_test_key') === 'keep_me';
+          return framesAfterReload.length >= 5 &&
+            !framesAfterReload.some(f => f.name.includes('(สำเนา)')) &&
+            activitiesAfterReload.length === 0 &&
+            unrelatedKept;
+        } finally {
+          localStorage.removeItem('pfs_custom_unrelated_test_key');
+        }
       }}
     ];
 
@@ -202,7 +319,10 @@
         document.getElementById('progressFill').style.width = pct + '%';
       }
 
-      document.getElementById('summaryTxt').textContent = `ผลการทดสอบ: ผ่านทั้งหมด ${passed} / ${tests.length} การทดสอบ (100% SUCCESS)`;
+      const passPct = tests.length > 0 ? Math.round((passed / tests.length) * 100) : 0;
+      const summaryEl = document.getElementById('summaryTxt');
+      summaryEl.style.color = passed === tests.length ? '#0C4A45' : '#991B1B';
+      summaryEl.textContent = `ผลการทดสอบ: ผ่านทั้งหมด ${passed} / ${tests.length} การทดสอบ (${passPct}% ${passed === tests.length ? 'SUCCESS' : 'PASSED'})`;
     }
 
     setTimeout(runAll, 300);

@@ -726,39 +726,35 @@
   }
 
   // ---------------------------------------------------------------
-  // Phase 9: Backup & Restore
+  // Phase 9: Backup & Restore (Canonical Storage v3)
   // ---------------------------------------------------------------
+  async function refreshAllAdminViews() {
+    initDriveConfig();
+    await Promise.all([
+      renderFrameList(),
+      renderQuotesList(),
+      renderModerationList()
+    ]);
+  }
+
   if (btnExportBackup) {
     btnExportBackup.addEventListener('click', async () => {
       try {
-        const frames = await FrameStore.getAll();
-        const quotes = await QuoteStore.getAll();
-        const activities = await ActivityStore.getAll();
-        const gasUrl = localStorage.getItem('pfs_gas_url') || '';
-
-        const backupData = {
-          version: '2.0',
-          exportedAt: new Date().toISOString(),
-          settings: { gasWebAppUrl: gasUrl },
-          frames,
-          quotes,
-          activities
-        };
-
+        const backupData = await StorageBackup.exportBackup();
         const jsonStr = JSON.stringify(backupData, null, 2);
         const blob = new Blob([jsonStr], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         const dateStr = new Date().toISOString().slice(0, 10);
         a.href = url;
-        a.download = `PhotoFrameStudio_Backup_${dateStr}.json`;
+        a.download = `PhotoFrameStudio_Backup_v3_${dateStr}.json`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        showToast('ดาวน์โหลดไฟล์ Backup สำเร็จ');
+        showToast('ดาวน์โหลดไฟล์สำรองข้อมูล (Backup v3.0) สำเร็จ');
       } catch (e) {
-        showToast('เกิดข้อผิดพลาดในการ Export: ' + e.message, true);
+        showToast('เกิดข้อผิดพลาดในการสำรองข้อมูล: ' + (e && e.message ? e.message : 'ไม่ทราบสาเหตุ'), true);
       }
     });
   }
@@ -769,47 +765,42 @@
     });
 
     importFileInput.addEventListener('change', async (e) => {
-      const file = e.target.files[0];
+      const file = e.target.files && e.target.files[0];
       if (!file) return;
 
       try {
         const text = await file.text();
-        const data = JSON.parse(text);
+        const result = await StorageBackup.restoreBackup(text);
+        await refreshAllAdminViews();
 
-        if (!data.frames && !data.quotes) {
-          throw new Error('รูปแบบไฟล์ Backup ไม่ถูกต้อง');
-        }
-
-        if (Array.isArray(data.frames)) {
-          localStorage.setItem('pfs_frames_v2', JSON.stringify(data.frames));
-        }
-        if (Array.isArray(data.quotes)) {
-          localStorage.setItem('pfs_quotes_v2', JSON.stringify(data.quotes));
-        }
-        if (Array.isArray(data.activities)) {
-          localStorage.setItem('pfs_activities_v2', JSON.stringify(data.activities));
-        }
-        if (data.settings && data.settings.gasWebAppUrl) {
-          localStorage.setItem('pfs_gas_url', data.settings.gasWebAppUrl);
-        }
-
-        showToast('กู้คืนข้อมูลสำเร็จ! กำลังรีเฟรชระบบ...');
-        setTimeout(() => window.location.reload(), 1200);
+        const parts = [];
+        if (result.restoredCounts.frames !== null) parts.push(`กรอบ ${result.restoredCounts.frames} รายการ`);
+        if (result.restoredCounts.quotes !== null) parts.push(`คำคม ${result.restoredCounts.quotes} รายการ`);
+        if (result.restoredCounts.activities !== null) parts.push(`ภาพกิจกรรม ${result.restoredCounts.activities} รายการ`);
+        const summary = parts.length > 0 ? ` (${parts.join(', ')})` : '';
+        showToast(`กู้คืนข้อมูลสำเร็จ${summary}`);
       } catch (err) {
-        showToast('ไม่สามารถนำเข้าไฟล์ได้: ' + err.message, true);
+        const msg = err && err.message ? err.message : 'รูปแบบไฟล์สำรองข้อมูลไม่ถูกต้อง';
+        showToast('ไม่สามารถกู้คืนข้อมูลได้: ' + msg, true);
+      } finally {
+        importFileInput.value = '';
       }
-      importFileInput.value = '';
     });
   }
 
   if (btnResetDefaults) {
-    btnResetDefaults.addEventListener('click', () => {
-      if (confirm('คำเตือน: คุณต้องการล้างข้อมูลและรีเซ็ตระบบกลับสู่ค่าเริ่มต้นทั้งหมดใช่หรือไม่? ข้อมูลที่แก้ไขเองจะถูกลบ')) {
-        localStorage.removeItem('pfs_frames_v2');
-        localStorage.removeItem('pfs_quotes_v2');
-        localStorage.removeItem('pfs_activities_v2');
-        showToast('รีเซ็ตระบบเรียบร้อย กำลังโหลดข้อมูลเริ่มต้น...');
-        setTimeout(() => window.location.reload(), 1000);
+    btnResetDefaults.addEventListener('click', async () => {
+      const confirmed = confirm('คำเตือน: คุณต้องการล้างข้อมูลกรอบ คำคม และภาพกิจกรรม เพื่อรีเซ็ตกลับสู่ค่าเริ่มต้นของระบบใช่หรือไม่? (การตั้งค่าอื่น ๆ ที่ไม่เกี่ยวข้องจะไม่ถูกลบ)');
+      if (!confirmed) return;
+
+      try {
+        await StorageBackup.resetAllDefaults();
+        quoteEditorCard.classList.add('hidden');
+        frameEditorCard.classList.add('hidden');
+        await refreshAllAdminViews();
+        showToast('รีเซ็ตข้อมูลกลับสู่ค่าเริ่มต้นของระบบเรียบร้อยแล้ว');
+      } catch (err) {
+        showToast('เกิดข้อผิดพลาดในการรีเซ็ตข้อมูล: ' + (err && err.message ? err.message : 'ไม่ทราบสาเหตุ'), true);
       }
     });
   }
@@ -890,6 +881,21 @@
       if (e.key === 'Enter') verify();
     });
   }
+
+  // ---------------------------------------------------------------
+  // Cross-Tab Realtime Sync
+  // ---------------------------------------------------------------
+  window.addEventListener('pfs:frames_updated', () => {
+    renderFrameList().catch(err => console.warn('Cross-tab frame sync error:', err));
+  });
+
+  window.addEventListener('pfs:quotes_updated', () => {
+    renderQuotesList().catch(err => console.warn('Cross-tab quote sync error:', err));
+  });
+
+  window.addEventListener('pfs:activities_updated', () => {
+    renderModerationList().catch(err => console.warn('Cross-tab activity sync error:', err));
+  });
 
   // ---------------------------------------------------------------
   // Boot

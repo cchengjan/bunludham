@@ -1,0 +1,68 @@
+# =============================================================================
+# Cloudflare Workers + D1 Configuration for Bunludham Membership API
+# IMPORTANT: Never store real secrets in this file.
+# Set secrets via `npx wrangler secret put <NAME>` or local `.dev.vars`.
+# =============================================================================
+
+name = "bunludham-membership-api"
+main = "src/index.js"
+compatibility_date = "2025-02-01"
+
+[vars]
+APP_ENV = "development"
+FRONTEND_ORIGIN = "http://localhost:8080"
+ALLOWED_ORIGINS = "http://localhost:8080,http://127.0.0.1:8080"
+LINE_REDIRECT_URI = "http://localhost:8787/api/v1/auth/line/callback"
+COOKIE_SAME_SITE = "Lax"
+SESSION_TTL_SECONDS = "604800"
+POLICY_VERSION = "2026-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "bunludham-db-dev"
+database_id = "00000000-0000-0000-0000-000000000000"
+migrations_dir = "migrations"
+
+# -----------------------------------------------------------------------------
+# Staging Environment
+# -----------------------------------------------------------------------------
+[env.staging]
+name = "bunludham-membership-api-staging"
+
+[env.staging.vars]
+APP_ENV = "staging"
+FRONTEND_ORIGIN = "https://cchengjan.github.io"
+FRONTEND_BASE_PATH = "/bunludham"
+ALLOWED_ORIGINS = "https://cchengjan.github.io"
+LINE_REDIRECT_URI = "https://bunludham-membership-api-staging.cchengjan63-a3b.workers.dev/api/v1/auth/line/callback"
+COOKIE_SAME_SITE = "None"
+SESSION_TTL_SECONDS = "604800"
+POLICY_VERSION = "2026-01"
+
+[[env.staging.d1_databases]]
+binding = "DB"
+database_name = "bunludham-db-staging"
+database_id = "13c25e0c-03c7-4187-9369-5f1071ee8d70"
+migrations_dir = "migrations"
+
+# -----------------------------------------------------------------------------
+# Production Environment (GitHub Pages Frontend + Cloudflare Workers API)
+# -----------------------------------------------------------------------------
+[env.production]
+name = "bunludham-membership-api"
+
+[env.production.vars]
+APP_ENV = "production"
+FRONTEND_ORIGIN = "https://cchengjan.github.io"
+FRONTEND_BASE_PATH = "/bunludham"
+ALLOWED_ORIGINS = "https://cchengjan.github.io"
+LINE_REDIRECT_URI = "https://bunludham-membership-api.cchengjan63-a3b.workers.dev/api/v1/auth/line/callback"
+COOKIE_SAME_SITE = "None"
+SESSION_TTL_SECONDS = "604800"
+POLICY_VERSION = "2026-01"
+
+[[env.production.d1_databases]]
+binding = "DB"
+database_name = "bunludham-db"
+database_id = "2e0ee8bc-7d33-4e20-80ba-fb20258989ae"
+migrations_dir = "migrations"

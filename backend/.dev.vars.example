@@ -1,0 +1,28 @@
+# =============================================================================
+# Local Development Environment Variables (Copy to backend/.dev.vars)
+# NEVER commit backend/.dev.vars to Git!
+# =============================================================================
+
+APP_ENV=development
+PORT=8787
+
+# Frontend URLs allowed to call this API with credentials and receive redirects
+FRONTEND_ORIGIN=http://localhost:8080
+FRONTEND_BASE_PATH=
+ALLOWED_ORIGINS=http://localhost:8080,http://127.0.0.1:8080
+
+# Official LINE Login Channel Credentials (from LINE Developers Console)
+LINE_CHANNEL_ID=YOUR_LINE_LOGIN_CHANNEL_ID
+LINE_CHANNEL_SECRET=YOUR_LINE_LOGIN_CHANNEL_SECRET
+LINE_REDIRECT_URI=http://localhost:8787/api/v1/auth/line/callback
+
+# Random 32+ byte secret used for CSRF HMAC derivation and IP privacy hashing
+# Generate with: openssl rand -hex 32
+SESSION_SECRET=REPLACE_WITH_AT_LEAST_32_RANDOM_HEX_OR_BASE64_CHARS
+
+# Cookie & Session Policy
+# Use "Lax" when frontend & API share the same site/domain (or localhost).
+# Use "None" (with HTTPS) when frontend is on GitHub Pages and API is on workers.dev.
+COOKIE_SAME_SITE=Lax
+SESSION_TTL_SECONDS=604800
+POLICY_VERSION=2026-01

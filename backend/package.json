@@ -1,0 +1,26 @@
+{
+  "name": "bunludham-membership-api",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Cloudflare Workers + D1 Backend API for Bunludham Official LINE Login v2.1 Membership System",
+  "type": "module",
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "scripts": {
+    "dev": "node ./scripts/dev-server.mjs",
+    "db:migrate": "node ./scripts/migrate.mjs",
+    "db:seed": "node ./scripts/migrate.mjs --seed",
+    "db:migrate:seed": "node ./scripts/migrate.mjs --seed",
+    "test": "node --test ./tests/*.test.mjs",
+    "cf:login": "npx wrangler login",
+    "cf:whoami": "npx wrangler whoami",
+    "cf:dev": "npx wrangler dev",
+    "cf:d1:create:production": "npx wrangler d1 create bunludham-db",
+    "cf:d1:migrate:local": "npx wrangler d1 migrations apply bunludham-db-dev --local",
+    "cf:d1:migrate:staging": "npx wrangler d1 migrations apply bunludham-db --env staging --remote",
+    "cf:d1:migrate:production": "npx wrangler d1 migrations apply bunludham-db --env production --remote",
+    "cf:deploy:staging": "npx wrangler deploy --env staging",
+    "cf:deploy:production": "npx wrangler deploy --env production"
+  }
+}
